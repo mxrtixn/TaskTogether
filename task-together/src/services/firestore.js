@@ -13,17 +13,17 @@ import {
   getDoc
 } from "firebase/firestore";
 
-// 1. Créer une tâche
+// Créer une tâche
 export const createTask = async (userId, taskData) => {
   const taskRef = collection(db, "tasks");
   return await addDoc(taskRef, {
-    ...taskData,
+    ...taskData, // Ajout des element de taskData
     userId,
     createdAt: new Date(),
   });
 };
 
-// 2. Obtenir les tâches d’un utilisateur en temps réel
+// Obtenir les tâches d’un utilisateur en temps réel
 export const getUserTasks = (userId, callback) => {
   const q = query(collection(db, "tasks"), where("userId", "==", userId));
   return onSnapshot(q, (snapshot) => {
@@ -32,19 +32,19 @@ export const getUserTasks = (userId, callback) => {
   });
 };
 
-// 3. Mettre à jour une tâche
+// Mettre à jour une tâche
 export const updateTask = async (taskId, updatedData) => {
   const taskRef = doc(db, "tasks", taskId);
   return await updateDoc(taskRef, updatedData);
 };
 
-// 4. Supprimer une tâche
+// Supprimer une tâche
 export const deleteTask = async (taskId) => {
   const taskRef = doc(db, "tasks", taskId);
   return await deleteDoc(taskRef);
 };
 
-// 5. Partager la liste de tâches (exemple basique avec `sharedWith`)
+// Partager la liste de tâches (exemple basique avec `sharedWith`)
 export const shareTaskList = async (ownerId, sharedUserEmail) => {
   const sharedRef = doc(db, "sharedLists", ownerId);
   const docSnap = await getDoc(sharedRef);
