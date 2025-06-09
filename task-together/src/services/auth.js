@@ -1,7 +1,7 @@
 // src/services/auth.js
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
-
-const auth = getAuth();
+import {  createUserWithEmailAndPassword, parseActionCodeURL, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { updateProfile } from "firebase/auth";
+import { auth } from "./firebase"; 
 
 export const registerUser = async (email, password, pseudo) => {
   const userCredential =  createUserWithEmailAndPassword(auth, email, password);
@@ -11,13 +11,20 @@ export const registerUser = async (email, password, pseudo) => {
   return userCredential.user
 };
 
-export const loginUser = (email, password) => {
-  const userCredential = signInWithEmailAndPassword(auth, email, password);
-  const user = userCredential.user;
+export const loginUser = async (email, password) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  
+    const user = userCredential.user;
 
-  const pseudo = user.displayName; // Here's the pseudo
+    const pseudo = user.displayName;
+    // Here's the pseudo
+    return { success: true, user: user, pseudo: pseudo };
 
-  return { user, pseudo };
+  }catch(error){
+    return { success: false, error: error.message };
+  }
+  
 };
 
 export const logoutUser = () => {

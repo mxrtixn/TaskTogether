@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 //import { registerUser } from '../services/auth';
 import './styles/Register.css'; // Import CSS
-
+import { registerUser } from '../services/auth'; 
 export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +20,7 @@ export default function Register() {
 
   return (
     <div className="register-container">
-      <h1 className="register-title">Inscription</h1>
+      <h1 className="register-title">Register</h1>
       
       {error && <p className="error-message">{error}</p>}
 
@@ -50,11 +50,11 @@ export default function Register() {
           required
           minLength="6"
         />
-
-        <button type="submit" className="register-button">
-          Créer un compte
+        <button className="register-button" onClick={handleSubmit}>
+          Register
         </button>
       </form>
+      <p className='router-to-login'>I have an account? <a href="/login">Log In</a></p>
     </div>
   );
 }
