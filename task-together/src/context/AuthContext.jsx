@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook personnalisé pour accéder au contexte
 export const useAuth = () => {
   return useContext(AuthContext);
 };

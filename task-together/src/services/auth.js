@@ -1,10 +1,9 @@
 // src/services/auth.js
-import {  createUserWithEmailAndPassword, parseActionCodeURL, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { updateProfile } from "firebase/auth";
+import {  createUserWithEmailAndPassword, updateProfile,setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "./firebase"; 
 
 export const registerUser = async (email, password, pseudo) => {
-  const userCredential =  createUserWithEmailAndPassword(auth, email, password);
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(userCredential.user, {
     displayName: pseudo
   });
@@ -13,6 +12,8 @@ export const registerUser = async (email, password, pseudo) => {
 
 export const loginUser = async (email, password) => {
   try {
+    await setPersistence(auth, browserLocalPersistence);
+
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
   
     const user = userCredential.user;

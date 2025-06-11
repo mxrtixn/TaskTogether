@@ -1,9 +1,24 @@
 import './styles/login.css'
 import { useEffect } from 'react';
-import { loginUser } from '../services/auth'; // you’ll create this
 import { useNavigate } from 'react-router-dom';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { loginUser } from '../services/auth'; // you’ll create this
 function Login() {
+  const navigate = useNavigate();
+  const auth = getAuth();
   useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          navigate('/dashboard');
+        }
+      });
+
+      return () => unsubscribe(); // Cleanup the listener
+    }, [auth, navigate]);
+  
+  useEffect(() => {
+    // Redirect to dashboard if already logged in
+    
     const loginBtn = document.querySelector('button');
     loginBtn.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -14,9 +29,13 @@ function Login() {
         const msg = await loginUser(email, password);
         
         if (msg.success){
+          console.log(msg.pseudo);
+          localStorage.setItem("userEmail", msg.user.email);  // store email
+          localStorage.setItem("displayName", msg.user.displayName || "User");  // optional
           window.location.href = '/dashboard'; // redirect after login
+          
         }else{
-          alert('Login failed: ' + 'Invalid credentials');
+          alert('Login failed: ' + msg.error);
         }
       } catch (err) {
         alert('Login failed 2: ' + err.message);
