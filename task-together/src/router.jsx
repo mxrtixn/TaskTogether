@@ -8,10 +8,10 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Home />} />               {/* Page d'accueil */}
+        <Route path="/login" element={<Login />} />         {/* Connexion */}
+        <Route path="/register" element={<Register />} />   {/* Inscription */}
+        <Route path="/dashboard" element={<Dashboard />} /> {/* Tableau de bord */}
       </Routes>
     </BrowserRouter>
   );
