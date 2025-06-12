@@ -11,7 +11,7 @@ function Login() {
         if (user) {
           navigate('/dashboard');
         }
-      });
+      }); 
 
       return () => unsubscribe(); // Cleanup the listener
     }, [auth, navigate]);
