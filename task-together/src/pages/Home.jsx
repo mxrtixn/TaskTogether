@@ -1,13 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import './styles/Home.css';
 
 const Home = () => {
+  const [displayName, setDisplayName] = useState('');
+  const auth = getAuth();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setDisplayName(user.displayName || user.email?.split('@')[0] || '');
+      }
+    });
+    return () => unsubscribe();
+  }, [auth]);
+
   return (
     <div className="home-container">
       {/* Section Hero */}
       <section className="hero-section">
-        <h1 className="hero-title">Bienvenue sur TaskTogether</h1>
+        <h1 className="hero-title">Bienvenue {displayName && `, ${displayName}`} sur TaskTogether</h1>
         <p className="hero-subtitle">
           L'application collaborative pour gérer vos tâches en équipe avec simplicité et efficacité.
         </p>

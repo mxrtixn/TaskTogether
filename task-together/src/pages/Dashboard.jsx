@@ -12,7 +12,7 @@ export default function Dashboard() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setDisplayName(user.displayName || "Utilisateur");
+        setDisplayName(user.displayName || user.email?.split('@')[0] || "Utilisateur");
       } else {
         navigate('/login');
       }
