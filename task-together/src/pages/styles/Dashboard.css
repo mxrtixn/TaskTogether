@@ -1,14 +1,15 @@
-/* Dashboard AAAART Orange Theme */
-@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Archivo+Black&display=swap');
+/* Sidebar + Compact Dashboard Styles */
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
 
 body {
   font-family: 'Archivo Black', sans-serif;
   background: linear-gradient(to bottom, #ff9966, #ff5e62);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  animation: gradientBG 15s ease infinite;
   background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 @keyframes gradientBG {
@@ -17,116 +18,110 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* Custom scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
 }
-
-::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.2);
-  border-radius: 10px;
-}
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.5);
-  border-radius: 10px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
+  background: rgba(255,255,255,0.3);
+  border-radius: 8px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255,255,255,0.5);
 }
 
-/* Task cards */
-.task-card {
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
-  transition: all 0.3s ease;
-  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-  font-family: 'Archivo Black', sans-serif;
-  color: #3b1d10;
+/* Sidebar */
+aside {
+  min-height: 100vh;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
-
-.task-card:hover {
-  transform: translateY(-6px) scale(1.01);
-  box-shadow: 0 18px 36px rgba(0,0,0,0.15);
+aside h1 {
+  font-size: 1.8rem;
+  text-align: center;
 }
-
-.task-card h3:hover {
-  color: #ff5e62;
-  transition: color 0.3s ease;
+aside button {
+  transition: background 0.2s;
 }
-
-/* Columns */
-.task-column {
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
-  padding: 1rem;
+aside button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Header */
 .dashboard-header {
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  border-bottom: 3px dashed rgba(255,255,255,0.4);
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Footer */
 .dashboard-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.85rem;
+  color: #3b1d10;
   background: rgba(255,255,255,0.2);
   backdrop-filter: blur(10px);
-  border-top: 3px dashed rgba(255,255,255,0.4);
 }
 
-/* Buttons */
+/* Task Columns */
+.task-column {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  min-height: 250px;
+}
+
+.task-column h2 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #3b1d10;
+}
+
+/* Task Card */
+.task-card {
+  background: white;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+  cursor: grab;
+}
+
+.task-card:hover {
+  transform: translateY(-3px);
+}
+
+.task-card h3 {
+  font-size: 1rem;
+  color: #3b1d10;
+  margin-bottom: 0.3rem;
+}
+
+.task-card p {
+  font-size: 0.85rem;
+  color: #5a2a0a;
+  margin-bottom: 0.4rem;
+}
+
+.task-card span {
+  font-size: 0.75rem;
+  color: #5a2a0a;
+}
+
+/* CTA Button */
 .cta-button {
   background: linear-gradient(45deg, #ff8a00, #ff5e62);
   color: white;
   border: none;
-  border-radius: 50px;
+  border-radius: 30px;
+  padding: 0.6rem 1.3rem;
   font-weight: bold;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  box-shadow: 0 4px 15px rgba(255,94,98,0.4);
-  transition: all 0.3s;
+  transition: 0.3s;
+  font-size: 0.9rem;
 }
-
 .cta-button:hover {
-  transform: scale(1.05) rotate(2deg);
-  box-shadow: 0 6px 20px rgba(255,94,98,0.6);
+  transform: scale(1.05);
   background: linear-gradient(45deg, #ff5e62, #ff8a00);
-}
-
-/* Dropdown */
-.user-dropdown {
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255,255,255,0.6);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-}
-
-/* Modal */
-.task-modal {
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(15px);
-  border: 3px dashed rgba(255,255,255,0.6);
-  box-shadow: 0 15px 50px rgba(0,0,0,0.2);
-}
-
-/* Text color fixes */
-.task-card h3,
-.task-card p,
-.task-card span,
-.task-column h2,
-.dashboard-footer p {
-  color: #3b1d10;
-}
-
-.task-column h2 {
-  text-shadow: 1px 1px 1px rgba(255,255,255,0.6);
 }
