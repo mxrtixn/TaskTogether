@@ -1,18 +1,26 @@
-// Dashboard ARTTT - Version Plein Écran Desktop Sans Centrage
+// ✅ src/pages/Dashboard.jsx
 import { useState, useEffect } from 'react';
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 import './styles/Dashboard.css';
 
+import { useTasks } from '../hooks/useTasks';
+import TaskItem from '../components/TaskItem';
+import TaskForm from '../components/TaskForm';
+
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [displayName, setDisplayName] = useState('');
   const auth = getAuth();
+  const [displayName, setDisplayName] = useState('');
+  const [userId, setUserId] = useState(null);
+  const [editingTask, setEditingTask] = useState(null);
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setDisplayName(user.displayName || user.email?.split('@')[0] || "Utilisateur");
+        setUserId(user.uid);
       } else {
         navigate('/login');
       }
@@ -20,9 +28,26 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, [auth, navigate]);
 
+  const { tasks, addTask, updateTask, deleteTask } = useTasks(userId);
+
   const handleLogout = async () => {
     await signOut(auth);
     navigate('/login');
+  };
+
+  const handleEdit = (task) => {
+    setEditingTask(task);
+    setCreating(false);
+  };
+
+  const handleSave = async (data) => {
+    if (editingTask) {
+      await updateTask(editingTask.id, data);
+      setEditingTask(null);
+    } else {
+      await addTask(data);
+      setCreating(false);
+    }
   };
 
   return (
@@ -38,17 +63,42 @@ export default function Dashboard() {
       </header>
 
       <main className="p-6 w-full max-w-none">
+        <div className="flex justify-end mb-6">
+          {!creating && !editingTask && (
+            <button onClick={() => setCreating(true)} className="cta-button">
+              + Nouvelle tâche
+            </button>
+          )}
+        </div>
+
+        {(creating || editingTask) && (
+          <div className="mb-6">
+            <TaskForm
+              initialData={editingTask}
+              onSubmit={handleSave}
+              onCancel={() => {
+                setCreating(false);
+                setEditingTask(null);
+              }}
+            />
+          </div>
+        )}
+
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-6">
           {["A FAIRE", "EN COURS", "TERMINÉ"].map((section, index) => (
-            <div key={index} className="rounded-xl bg-white/60 backdrop-blur-lg shadow-xl p-6 min-h-[400px] w-full">
-              <h2 className="text-xl font-bold mb-4 text-orange-700">{section}</h2>
-              <div className="space-y-4">
-                <div className="bg-white rounded-lg p-4 shadow hover:shadow-md transition-all border-l-4 border-orange-400">
-                  <h3 className="font-semibold text-lg mb-1">Exemple de Tâche</h3>
-                  <p className="text-sm text-gray-700">Description rapide ici</p>
-                  <div className="mt-2 text-xs text-orange-600">Priorité : Moyenne</div>
-                </div>
-              </div>
+            <div key={index} className="task-column">
+              <h2>{section}</h2>
+              {tasks.filter(t => t.status === section).map(task => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onEdit={handleEdit}
+                  onDelete={deleteTask}
+                />
+              ))}
+              {tasks.filter(t => t.status === section).length === 0 && (
+                <p className="text-sm text-gray-600 italic">Aucune tâche</p>
+              )}
             </div>
           ))}
         </section>
