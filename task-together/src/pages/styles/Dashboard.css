@@ -1,127 +1,19 @@
 /* Sidebar + Compact Dashboard Styles */
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
-
 body {
-  font-family: 'Archivo Black', sans-serif;
-  background: linear-gradient(to bottom, #ff9966, #ff5e62);
-  background-size: 400% 400%;
-  animation: gradientBG 15s ease infinite;
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
 }
-
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Scrollbar */
+/* Custom scrollbar for better aesthetics, Notion-like */
 ::-webkit-scrollbar {
-  width: 8px;
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #F1F5F9; /* bg-slate-100 */
+    border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.3);
-  border-radius: 8px;
+    background: #CBD5E1; /* bg-slate-400 */
+    border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.5);
-}
-
-/* Sidebar */
-aside {
-  min-height: 100vh;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-}
-aside h1 {
-  font-size: 1.8rem;
-  text-align: center;
-}
-aside button {
-  transition: background 0.2s;
-}
-aside button:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-/* Header */
-.dashboard-header {
-  padding: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Footer */
-.dashboard-footer {
-  padding: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 0.85rem;
-  color: #3b1d10;
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-}
-
-/* Task Columns */
-.task-column {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(12px);
-  border-radius: 10px;
-  padding: 1rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  min-height: 250px;
-}
-
-.task-column h2 {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  color: #3b1d10;
-}
-
-/* Task Card */
-.task-card {
-  background: white;
-  padding: 0.8rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: transform 0.2s;
-  cursor: grab;
-}
-
-.task-card:hover {
-  transform: translateY(-3px);
-}
-
-.task-card h3 {
-  font-size: 1rem;
-  color: #3b1d10;
-  margin-bottom: 0.3rem;
-}
-
-.task-card p {
-  font-size: 0.85rem;
-  color: #5a2a0a;
-  margin-bottom: 0.4rem;
-}
-
-.task-card span {
-  font-size: 0.75rem;
-  color: #5a2a0a;
-}
-
-/* CTA Button */
-.cta-button {
-  background: linear-gradient(45deg, #ff8a00, #ff5e62);
-  color: white;
-  border: none;
-  border-radius: 30px;
-  padding: 0.6rem 1.3rem;
-  font-weight: bold;
-  transition: 0.3s;
-  font-size: 0.9rem;
-}
-.cta-button:hover {
-  transform: scale(1.05);
-  background: linear-gradient(45deg, #ff5e62, #ff8a00);
+    background: #94A3B8; /* bg-slate-500 */
 }

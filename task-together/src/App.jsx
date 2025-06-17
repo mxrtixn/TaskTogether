@@ -1,7 +1,7 @@
 import AppRouter from './router';
 import { AuthProvider } from './context/AuthContext';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-
+import './App.css'
 function App() {
   const auth = getAuth();
 

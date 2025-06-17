@@ -44,14 +44,16 @@ function Login() {
   }, [navigate]);
 
   return (
-    <div className="login-container">
-      <h2 className="login-title">Login</h2>
-      <input type="email" placeholder="Email" />
-      <input type="password" placeholder="Password" />
-      <button>Login</button>
-      <p className="router-to-register">
-        Don't have an account? <a href="/register">Register</a>
-      </p>
+    <div className="divbody min-h-screen bg-blue-50 flex justify-center items-center">
+      <div className="login-container">
+        <h2 className="login-title">Login</h2>
+        <input type="email" placeholder="Email" />
+        <input type="password" placeholder="Password" />
+        <button>Login</button>
+        <p className="router-to-register">
+          Don't have an account? <a href="/register">Register</a>
+        </p>
+      </div>
     </div>
   );
 }

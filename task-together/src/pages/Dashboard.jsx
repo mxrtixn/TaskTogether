@@ -1,112 +1,231 @@
-// ✅ src/pages/Dashboard.jsx
-import { useState, useEffect } from 'react';
-import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
-import { useNavigate } from 'react-router-dom';
-import './styles/Dashboard.css';
-
-import { useTasks } from '../hooks/useTasks';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; 
+import { getAuth, signOut } from "firebase/auth";
 import TaskItem from '../components/TaskItem';
-import TaskForm from '../components/TaskForm';
-
-export default function Dashboard() {
+export default function Dashboard(){
   const navigate = useNavigate();
-  const auth = getAuth();
-  const [displayName, setDisplayName] = useState('');
-  const [userId, setUserId] = useState(null);
-  const [editingTask, setEditingTask] = useState(null);
-  const [creating, setCreating] = useState(false);
+    // State for managing the visibility of the user settings dropdown
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    // Ref to detect clicks outside the dropdownAdd commentMore actions
+    const dropdownRef = useRef(null);
+    const buttonRef = useRef(null);
+    const [email, setEmail] = useState('');
+    const [displayName, setDisplayName] = useState('');
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setDisplayName(user.displayName || user.email?.split('@')[0] || "Utilisateur");
-        setUserId(user.uid);
-      } else {
+    const auth = getAuth();
+    const handleLogout = async () =>  {
+        // Clear auth data (e.g., token, user info)
+        await signOut(auth);
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("displayName")
+        sessionStorage.clear();
+        // Navigate to login
         navigate('/login');
-      }
-    });
-    return () => unsubscribe();
-  }, [auth, navigate]);
+    };
+    // Effect to handle clicking outside the dropdown to close it
+    useEffect(() => {
+        const storedEmail = localStorage.getItem("userEmail");
+        const name = localStorage.getItem("displayName");
+        // Redirect to login if no data found (optional)
+        if (name == ""){
+          window.location.href = '/login';
+        }else{
+          setEmail(storedEmail)
+          setDisplayName(name)
+        }
+        
+        
+        const handleClickOutside = (event) => {
+            // Close dropdown if click is outside the dropdown and the button
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+                buttonRef.current && !buttonRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
 
-  const { tasks, addTask, updateTask, deleteTask } = useTasks(userId);
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate('/login');
-  };
-
-  const handleEdit = (task) => {
-    setEditingTask(task);
-    setCreating(false);
-  };
-
-  const handleSave = async (data) => {
-    if (editingTask) {
-      await updateTask(editingTask.id, data);
-      setEditingTask(null);
-    } else {
-      await addTask(data);
-      setCreating(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen w-screen bg-gradient-to-br from-orange-300 via-white to-orange-200 text-[#3b1d10] font-sans overflow-x-hidden">
-      <header className="w-full px-10 py-6 shadow-md flex items-center justify-between backdrop-blur-md bg-white/70 sticky top-0 z-50">
-        <h1 className="text-3xl font-extrabold tracking-tight">TASKTOGETHER</h1>
-        <div className="flex items-center gap-4">
-          <span className="font-semibold hidden sm:block">{displayName}</span>
-          <button onClick={handleLogout} className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-full shadow">
-            Déconnexion
-          </button>
-        </div>
-      </header>
-
-      <main className="p-6 w-full max-w-none">
-        <div className="flex justify-end mb-6">
-          {!creating && !editingTask && (
-            <button onClick={() => setCreating(true)} className="cta-button">
-              + Nouvelle tâche
-            </button>
-          )}
-        </div>
-
-        {(creating || editingTask) && (
-          <div className="mb-6">
-            <TaskForm
-              initialData={editingTask}
-              onSubmit={handleSave}
-              onCancel={() => {
-                setCreating(false);
-                setEditingTask(null);
-              }}
-            />
-          </div>
-        )}
-
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-6">
-          {["A FAIRE", "EN COURS", "TERMINÉ"].map((section, index) => (
-            <div key={index} className="task-column">
-              <h2>{section}</h2>
-              {tasks.filter(t => t.status === section).map(task => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onEdit={handleEdit}
-                  onDelete={deleteTask}
-                />
-              ))}
-              {tasks.filter(t => t.status === section).length === 0 && (
-                <p className="text-sm text-gray-600 italic">Aucune tâche</p>
-              )}
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+    // Function to handle the "Create New Task" button click
+    const handleCreateTaskClick = () => {
+        // In a real application, this would open a modal or navigate to a task creation page.
+        // For demonstration, we'll simulate a modal.
+        const messageBox = document.createElement('div');
+        messageBox.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        messageBox.innerHTML = `
+            <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
+                <h3 class="text-lg font-semibold mb-4 text-gray-800">New Task</h3>
+                <p class="text-gray-600 mb-6">This button would typically open a form to create a new task!</p>
+                <button id="closeMessageBox" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">Got It!</button>
             </div>
-          ))}
-        </section>
-      </main>
+        `;
+        document.body.appendChild(messageBox);
 
-      <footer className="text-center py-4 text-sm text-[#3b1d10] bg-white/50 w-full mt-12">
-        © {new Date().getFullYear()} TaskTogether. Tous droits réservés.
-      </footer>
-    </div>
-  );
-}
+        // Add event listener to close the simulated message box
+        document.getElementById('closeMessageBox').addEventListener('click', () => {
+            messageBox.remove();
+        });
+        console.log('Create New Task button clicked!');
+    };
+
+    // Conceptual Drag and Drop Handlers (Frontend only, no state management yet)
+    // These functions provide visual feedback for drag-and-drop.
+    // For full functionality, you'd need a state management solution (e.g., React Context, Zustand)
+    // to update the task lists and re-render components.
+
+    const handleDragStart = (e) => {
+        // Set the ID of the dragged task card
+        e.dataTransfer.setData('text/plain', e.currentTarget.id);
+        e.currentTarget.classList.add('opacity-50'); // Add visual feedback for dragging
+    };
+
+    const handleDragEnd = (e) => {
+        e.currentTarget.classList.remove('opacity-50'); // Remove visual feedback after drag ends
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault(); // Essential to allow a drop
+        // Add visual feedback to the container being dragged over
+        e.currentTarget.classList.add('bg-blue-50', 'border-blue-300');
+    };
+
+    const handleDragLeave = (e) => {
+        // Remove visual feedback from the container
+        e.currentTarget.classList.remove('bg-blue-50', 'border-blue-300');
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.currentTarget.classList.remove('bg-blue-50', 'border-blue-300');
+        const draggedId = e.dataTransfer.getData('text/plain');
+        const draggedElement = document.getElementById(draggedId);
+
+        if (draggedElement) {
+            // Append the dragged element to the new container.
+            // In a real app, you would update your state to move the task object
+            // from one list to another and let React re-render.Add commentMore actions
+            e.currentTarget.appendChild(draggedElement);
+            console.log(`Task ${draggedId} dropped in ${e.currentTarget.id}`);
+        }
+    };
+    const initials = displayName
+      .split(" ")
+      .filter(word => word.length > 0)     // Remove any empty words
+      .slice(0, 2)                          // First and last name only
+      .map(word => word[0].toUpperCase())  // Get first letter of each
+      .join("");                           // Join the letters
+  return ( <div className="overflow-x-hidden min-h-screen flex flex-col bg-slate-50">
+            
+            <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between sticky top-0 z-10 border-b border-gray-200">
+                {/* Logo and Home Link */}
+                <div className="flex items-center space-x-4">
+                    <a href="/" className="flex items-center text-gray-800 hover:text-blue-600 transition-colors duration-200">
+                        <div className="text-3xl font-extrabold text-orange-500">
+                          TaskTogether
+                        </div>
+                    </a>
+
+                </div>
+
+                {/* User Settings */}
+                <div className="relative">
+                    <button
+                        ref={buttonRef}
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="flex items-center bg-white ring-gray-100 space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2  focus:ring-blue-500 focus:ring-opacity-50"
+                    >
+                        <img src={`https://placehold.co/32x32/ff9e00/FFFFFF?text=${initials}`} alt="User Avatar" className="h-8 w-8 rounded-full border border-gray-200" />
+                        <span className="font-medium text-gray-700 hidden sm:block">{displayName}</span>
+                        <svg className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    <div
+                        ref={dropdownRef}
+                        className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-20 border border-gray-200 ${isDropdownOpen ? '' : 'hidden'}`}
+                    >
+                        {/*<a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200 rounded-md mx-1 my-1">Profile</a>*/}
+                        <hr className="border-t border-gray-200 my-1" />
+                        <button onClick={handleLogout} className="block px-4 py-2 bg-white text-sm text-red-600 hover:bg-red-50 transition-colors duration-200 rounded-md mx-1 my-1">Déconnecter</button>
+                    </div>
+                </div>
+            </header>
+
+            <main className="flex-grow p-6 lg:p-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* Create Task Button */}
+                    <div className="mb-8 flex justify-center">
+                        <button
+                            onClick={handleCreateTaskClick}
+                            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
+                        >
+                            <svg className="w-5 h-5 inline-block mr-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Ajouter une tâche
+                        </button>
+                    </div>
+
+                    {/* Task Sections */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* To Do Section */}
+                        <div
+                            className="bg-white rounded-xl shadow-lg p-6 border border-gray-200"
+                            id="todo-tasks" // ID for drag-and-drop targeting
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                        >
+                            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                <span className="bg-gray-200 text-gray-600 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mr-2">3</span>
+                                A faire
+                            </h2>
+                            <div className="space-y-4">
+                                {/* Example Task Card */}
+                                <TaskItem title='task4' description='description4' tag='Bas' dueDate='Janvier 12' />
+                                <TaskItem title='task1' description='description2' tag='haute' dueDate='Janvier 12' />
+                            </div>
+                        </div>
+
+                        {/* In Progress Section */}
+                        <div
+                            className="bg-white rounded-xl shadow-lg p-6 border border-gray-200"
+                            id="in-progress-tasks" // ID for drag-and-drop targeting
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                        >
+                            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                <span className="bg-blue-100 text-blue-600 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mr-2">2</span>
+                                En Cours
+                            </h2>
+                            <div className="space-y-4">
+                                <TaskItem title='ss' description='sssssss' tag='None' dueDate='Janvier 12' />
+                            </div>
+                        </div>
+
+                        {/* Done Section */}
+                        <div
+                            className="bg-white rounded-xl shadow-lg p-6 border border-gray-200"
+                            id="done-tasks" // ID for drag-and-drop targeting
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                        >
+                            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                                <span className="bg-green-100 text-green-600 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mr-2">5</span>
+                                Terminée
+                            </h2>
+                            <div className="space-y-4">
+                                <TaskItem title='Add crud service' description='Add CRUD functions that connected to firebase account ' tag='Bas' dueDate='Janvier 12' />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>);
+};
