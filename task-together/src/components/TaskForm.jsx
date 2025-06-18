@@ -1,69 +1,48 @@
 import { useState } from 'react';
 
-export default function TaskForm({ onSubmit, initialData = {}, onCancel }) {
-  const [form, setForm] = useState({
-    title: initialData.title || '',
-    description: initialData.description || '',
-    priority: initialData.priority || 'Moyenne',
-    status: initialData.status || 'A FAIRE',
-  });
+export default function TaskForm({ formData, onChange }) {
 
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    if (!form.title.trim()) return;
-    onSubmit(form);
-  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 bg-white/80 p-4 rounded-lg shadow-md">
+    <div className="space-y-3 bg-white/80 p-4 rounded-lg shadow-md">
       <input
         name="title"
-        value={form.title}
-        onChange={handleChange}
+        value={formData.title}
+        onChange={onChange}
         placeholder="Titre"
         className="w-full p-2 border rounded"
         required
       />
       <textarea
         name="description"
-        value={form.description}
-        onChange={handleChange}
+        value={formData.description}
+        onChange={onChange}
         placeholder="Description"
         className="w-full p-2 border rounded"
       />
+      <input type="date" name="dueDate" className="w-full mb-3 p-2 border rounded" value={formData.dueDate} required />
       <select
         name="priority"
-        value={form.priority}
-        onChange={handleChange}
+        value={formData.priority}
+        onChange={onChange}
         className="w-full p-2 border rounded"
       >
-        <option>Faible</option>
+        <option>None</option>
+        <option>Bas</option>
         <option>Moyenne</option>
         <option>Haute</option>
       </select>
       <select
         name="status"
-        value={form.status}
-        onChange={handleChange}
+        value={formData.status}
+        onChange={onChange}
         className="w-full p-2 border rounded"
       >
-        <option>A FAIRE</option>
-        <option>EN COURS</option>
-        <option>TERMINÉ</option>
+        <option>A Faire</option>
+        <option>En Cours</option>
+        <option>Terminé</option>
       </select>
-      <div className="flex justify-between">
-        <button type="submit" className="cta-button">Enregistrer</button>
-        {onCancel && (
-          <button type="button" onClick={onCancel} className="cta-button bg-gray-300 text-black">
-            Annuler
-          </button>
-        )}
-      </div>
-    </form>
+      
+    </div>
   );
 }

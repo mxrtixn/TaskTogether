@@ -3,11 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from "firebase/auth";
 import TaskList from '../components/TaskList';
 import { getUserTasks, shareTaskList } from '../services/firestore';
-
+import AddTaskForm from '../components/AddTaskForm';
 export default function Dashboard(){
   const navigate = useNavigate();
   const [tasksByCategory, setTasksByCategory] = useState({});
+const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const handleCreateTaskClick = () => {
+    setIsModalOpen(true); // ✅ Show modal
+    console.log('Create New Task button clicked!');
+  };
   useEffect(() => {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -81,7 +86,7 @@ export default function Dashboard(){
         };
     }, []);
     // Function to handle the "Create New Task" button click
-    const handleCreateTaskClick = () => {
+    const handleCreateTaskClick1 = () => {
         // In a real application, this would open a modal or navigate to a task creation page.
         // For demonstration, we'll simulate a modal.
         const messageBox = document.createElement('div');
@@ -167,7 +172,7 @@ export default function Dashboard(){
                             Ajouter une tâche
                         </button>
                     </div>
-
+                    {isModalOpen && <AddTaskForm onClose={() => setIsModalOpen(false)} />}
                     {/* Task Sections */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                        
