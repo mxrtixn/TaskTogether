@@ -1,5 +1,5 @@
 // src/services/firestore.js
-import { db } from '../firebase'; // assure-toi que le fichier firebase.js exporte `db`
+import { db } from './firebase'; // assure-toi que le fichier firebase.js exporte `db`
 import {
   collection,
   addDoc,
@@ -25,7 +25,7 @@ export const createTask = async (userId, taskData) => {
 
 // Obtenir les tâches d’un utilisateur en temps réel
 export const getUserTasks = (userId, callback) => {
-  const q = query(collection(db, "tasks"), where("userId", "==", userId));
+  const q = query(collection(db, "tasks"), where("userID", "==", userId));
   return onSnapshot(q, (snapshot) => {
     const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     callback(tasks);

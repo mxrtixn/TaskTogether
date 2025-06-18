@@ -1,9 +1,41 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { getAuth, signOut } from "firebase/auth";
-import TaskItem from '../components/TaskItem';
+import TaskList from '../components/TaskList';
+import { getUserTasks, shareTaskList } from '../services/firestore';
+
 export default function Dashboard(){
   const navigate = useNavigate();
+  const [tasksByCategory, setTasksByCategory] = useState({});
+
+  useEffect(() => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    // Start listening to user's tasks
+    
+    const unsubscribe = getUserTasks(user.email, (tasks) => {
+      const grouped = {
+        'to-do' : [],
+        'in-progress' : [],
+        'done':[]
+      };
+      tasks.forEach(task => {
+        let category = task.categorie?.trim().toLowerCase() || 'uncategorized';
+        // Normalize known categories
+        if (!grouped[category]) grouped[category] = [];
+        grouped[category].push(task);
+        setTasksByCategory(grouped);
+      });
+
+      
+    });
+    
+    return () => unsubscribe(); // Stop listening on unmount
+  }, []);
+
     // State for managing the visibility of the user settings dropdown
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     // Ref to detect clicks outside the dropdownAdd commentMore actions
@@ -75,41 +107,7 @@ export default function Dashboard(){
     // For full functionality, you'd need a state management solution (e.g., React Context, Zustand)
     // to update the task lists and re-render components.
 
-    const handleDragStart = (e) => {
-        // Set the ID of the dragged task card
-        e.dataTransfer.setData('text/plain', e.currentTarget.id);
-        e.currentTarget.classList.add('opacity-50'); // Add visual feedback for dragging
-    };
-
-    const handleDragEnd = (e) => {
-        e.currentTarget.classList.remove('opacity-50'); // Remove visual feedback after drag ends
-    };
-
-    const handleDragOver = (e) => {
-        e.preventDefault(); // Essential to allow a drop
-        // Add visual feedback to the container being dragged over
-        e.currentTarget.classList.add('bg-blue-50', 'border-blue-300');
-    };
-
-    const handleDragLeave = (e) => {
-        // Remove visual feedback from the container
-        e.currentTarget.classList.remove('bg-blue-50', 'border-blue-300');
-    };
-
-    const handleDrop = (e) => {
-        e.preventDefault();
-        e.currentTarget.classList.remove('bg-blue-50', 'border-blue-300');
-        const draggedId = e.dataTransfer.getData('text/plain');
-        const draggedElement = document.getElementById(draggedId);
-
-        if (draggedElement) {
-            // Append the dragged element to the new container.
-            // In a real app, you would update your state to move the task object
-            // from one list to another and let React re-render.Add commentMore actions
-            e.currentTarget.appendChild(draggedElement);
-            console.log(`Task ${draggedId} dropped in ${e.currentTarget.id}`);
-        }
-    };
+ 
     const initials = displayName
       .split(" ")
       .filter(word => word.length > 0)     // Remove any empty words
@@ -172,58 +170,10 @@ export default function Dashboard(){
 
                     {/* Task Sections */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* To Do Section */}
-                        <div
-                            className="bg-white rounded-xl shadow-lg p-6 border border-gray-200"
-                            id="todo-tasks" // ID for drag-and-drop targeting
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                        >
-                            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                                <span className="bg-gray-200 text-gray-600 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mr-2">3</span>
-                                A faire
-                            </h2>
-                            <div className="space-y-4">
-                                {/* Example Task Card */}
-                                <TaskItem title='task4' description='description4' tag='Bas' dueDate='Janvier 12' />
-                                <TaskItem title='task1' description='description2' tag='haute' dueDate='Janvier 12' />
-                            </div>
-                        </div>
-
-                        {/* In Progress Section */}
-                        <div
-                            className="bg-white rounded-xl shadow-lg p-6 border border-gray-200"
-                            id="in-progress-tasks" // ID for drag-and-drop targeting
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                        >
-                            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                                <span className="bg-blue-100 text-blue-600 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mr-2">2</span>
-                                En Cours
-                            </h2>
-                            <div className="space-y-4">
-                                <TaskItem title='ss' description='sssssss' tag='None' dueDate='Janvier 12' />
-                            </div>
-                        </div>
-
-                        {/* Done Section */}
-                        <div
-                            className="bg-white rounded-xl shadow-lg p-6 border border-gray-200"
-                            id="done-tasks" // ID for drag-and-drop targeting
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onDrop={handleDrop}
-                        >
-                            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                                <span className="bg-green-100 text-green-600 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mr-2">5</span>
-                                Terminée
-                            </h2>
-                            <div className="space-y-4">
-                                <TaskItem title='Add crud service' description='Add CRUD functions that connected to firebase account ' tag='Bas' dueDate='Janvier 12' />
-                            </div>
-                        </div>
+                       
+                        {Object.entries(tasksByCategory).map(([category, tasks]) => {
+                            return <TaskList key={category} category={category} tasks={tasks} setTaskLists={setTasksByCategory}/>
+                        })}
                     </div>
                 </div>
             </main>

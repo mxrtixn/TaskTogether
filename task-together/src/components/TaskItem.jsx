@@ -1,4 +1,4 @@
-export default function TaskItem({  title, description, dueDate, tag }) {
+export default function TaskItem({ id, title, description, dueDate, tag }) {
   const priorityColorBg = tag === 'Haute' ? 'bg-red-100'
     : tag === 'Moyenne' ? 'bg-yellow-100'
     : tag === 'Bas' ? 'bg-green-100'
@@ -7,18 +7,22 @@ export default function TaskItem({  title, description, dueDate, tag }) {
     : tag === 'Moyenne' ? 'text-yellow-600'
     : tag === 'Bas' ? 'text-green-600'
     : tag === 'None' ? 'text-gray-500' : '';
+    
     const handleDragStart = (e) => {
-        // Set the ID of the dragged task card
-        e.dataTransfer.setData('text/plain', e.currentTarget.id);
-        e.currentTarget.classList.add('opacity-50'); // Add visual feedback for dragging
+        // Set data for transfer: task ID and the ID of the column it originated from
+        e.dataTransfer.setData('taskId', e.currentTarget.id);
+        e.dataTransfer.setData('sourceColumnId', e.currentTarget.closest('[data-column-id]').dataset.columnId);
+        e.currentTarget.classList.add('opacity-50'); 
     };
 
     const handleDragEnd = (e) => {
         e.currentTarget.classList.remove('opacity-50'); // Remove visual feedback after drag ends
     };
+
   return (
     <div
-        id={`task-${Math.random().toString(36).substr(2, 9)}`} // Unique ID for drag-and-drop
+        id={id}
+        key={id} // Unique ID for drag-and-drop
         draggable="true"
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
