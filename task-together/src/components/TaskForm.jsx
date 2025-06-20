@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
 export default function TaskForm({ formData, onChange }) {
-
-
   return (
     <div className="space-y-3 bg-white/80 p-4 rounded-lg shadow-md">
       <input
@@ -20,7 +18,15 @@ export default function TaskForm({ formData, onChange }) {
         placeholder="Description"
         className="w-full p-2 border rounded"
       />
-      <input type="date" name="dueDate" className="w-full mb-3 p-2 border rounded" value={formData.dueDate} required />
+      {/* ✅ Ajout de onChange ici */}
+      <input
+        type="date"
+        name="dueDate"
+        value={formData.dueDate}
+        onChange={onChange}
+        className="w-full mb-3 p-2 border rounded"
+        required
+      />
       <select
         name="priority"
         value={formData.priority}
@@ -42,7 +48,6 @@ export default function TaskForm({ formData, onChange }) {
         <option>En Cours</option>
         <option>Terminé</option>
       </select>
-      
     </div>
   );
 }
