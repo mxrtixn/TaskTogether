@@ -4,6 +4,8 @@ import { getAuth, signOut } from "firebase/auth";
 import TaskList from '../components/TaskList';
 import { getUserTasks, shareTaskList } from '../services/firestore';
 import AddTaskForm from '../components/AddTaskForm';
+import { createTask } from "../services/firestore";
+
 export default function Dashboard(){
   const navigate = useNavigate();
   const [tasksByCategory, setTasksByCategory] = useState({});
@@ -81,6 +83,19 @@ const [isModalOpen, setIsModalOpen] = useState(false);
         };
 
         document.addEventListener('mousedown', handleClickOutside);
+        const handleAddTask = async (newTask) => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    await createTask(user.email, newTask);
+    console.log("Tâche ajoutée !");
+  } catch (error) {
+    console.error("Erreur lors de l'ajout de tâche :", error);
+  }
+};
+
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };

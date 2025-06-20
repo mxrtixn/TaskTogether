@@ -17,9 +17,9 @@ export default function AddTaskForm({ onSubmit, onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit(formData); // 🔥 Appelle la fonction passée depuis Dashboard
     setFormData({ title: '', description: '', tag: 'None', categorie: 'to-do', dueDate: '' });
-    onClose(); // Close after submit
+    onClose(); // Ferme le formulaire
   };
 
   return (
@@ -29,7 +29,6 @@ export default function AddTaskForm({ onSubmit, onClose }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <TaskForm formData={formData} onChange={handleChange} />
-
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
             <button
               type="button"

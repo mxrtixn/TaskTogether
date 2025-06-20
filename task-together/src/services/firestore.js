@@ -17,15 +17,15 @@ import {
 export const createTask = async (userId, taskData) => {
   const taskRef = collection(db, "tasks");
   return await addDoc(taskRef, {
-    ...taskData, // Ajout des element de taskData
-    userId,
+    ...taskData,
+    userId, // Clé correcte ici (minuscules)
     createdAt: new Date(),
   });
 };
 
 // Obtenir les tâches d’un utilisateur en temps réel
 export const getUserTasks = (userId, callback) => {
-  const q = query(collection(db, "tasks"), where("userID", "==", userId));
+  const q = query(collection(db, "tasks"), where("userId", "==", userId)); // ✅ corrigé ici aussi
   return onSnapshot(q, (snapshot) => {
     const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     callback(tasks);
@@ -44,7 +44,7 @@ export const deleteTask = async (taskId) => {
   return await deleteDoc(taskRef);
 };
 
-// Partager la liste de tâches (exemple basique avec `sharedWith`)
+// Partager la liste de tâches
 export const shareTaskList = async (ownerId, sharedUserEmail) => {
   const sharedRef = doc(db, "sharedLists", ownerId);
   const docSnap = await getDoc(sharedRef);
