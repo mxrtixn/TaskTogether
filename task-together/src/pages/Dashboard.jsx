@@ -7,41 +7,40 @@ import AddTaskForm from '../components/AddTaskForm';
 import { createTask } from "../services/firestore";
 
 export default function Dashboard(){
-  const navigate = useNavigate();
-  const [tasksByCategory, setTasksByCategory] = useState({});
-const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
+    const [tasksByCategory, setTasksByCategory] = useState({});
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleCreateTaskClick = () => {
-    setIsModalOpen(true); // ✅ Show modal
-    console.log('Create New Task button clicked!');
-  };
-  useEffect(() => {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const handleCreateTaskClick = () => {
+        setIsModalOpen(true);
+    };
+    useEffect(() => {
+        const auth = getAuth();
+        const user = auth.currentUser;
 
-    if (!user) return;
+        if (!user) return;
 
-    // Start listening to user's tasks
-    
-    const unsubscribe = getUserTasks(user.email, (tasks) => {
-      const grouped = {
-        'to-do' : [],
-        'in-progress' : [],
-        'done':[]
-      };
-      tasks.forEach(task => {
-        let category = task.categorie?.trim().toLowerCase() || 'uncategorized';
-        // Normalize known categories
-        if (!grouped[category]) grouped[category] = [];
-        grouped[category].push(task);
-        setTasksByCategory(grouped);
-      });
-
-      
+        // Start listening to user's tasks
+        
+        const unsubscribe = getUserTasks(user.email, (tasks) => {
+            
+            const grouped = {
+                'to-do' : [],
+                'in-progress' : [],
+                'done':[]
+            };
+            tasks.forEach(task => {
+                let category = task.categorie?.trim().toLowerCase() || 'uncategorized';
+                // Normalize known categories
+                if (!grouped[category]) grouped[category] = [];
+                grouped[category].push(task);
+                setTasksByCategory(grouped);
+                
+        });
     });
-    
-    return () => unsubscribe(); // Stop listening on unmount
-  }, []);
+        
+        return () => unsubscribe(); // Stop listening on unmount
+    }, []);
 
     // State for managing the visibility of the user settings dropdown
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -67,13 +66,11 @@ const [isModalOpen, setIsModalOpen] = useState(false);
         const name = localStorage.getItem("displayName");
         // Redirect to login if no data found (optional)
         if (name == ""){
-          window.location.href = '/login';
+            window.location.href = '/login';
         }else{
-          setEmail(storedEmail)
-          setDisplayName(name)
+            setEmail(storedEmail)
+            setDisplayName(name)
         }
-        
-        
         const handleClickOutside = (event) => {
             // Close dropdown if click is outside the dropdown and the button
             if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
@@ -83,34 +80,22 @@ const [isModalOpen, setIsModalOpen] = useState(false);
         };
 
         document.addEventListener('mousedown', handleClickOutside);
-        const handleAddTask = async (newTask) => {
-  const auth = getAuth();
-  const user = auth.currentUser;
-  if (!user) return;
+        
 
-  try {
-    await createTask(user.email, newTask);
-    console.log("Tâche ajoutée !");
-  } catch (error) {
-    console.error("Erreur lors de l'ajout de tâche :", error);
-  }
-};
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }, []);
     // Function to handle the "Create New Task" button click
-    const handleCreateTaskClick1 = () => {
+    const messageBox = (msg) => {
         // In a real application, this would open a modal or navigate to a task creation page.
         // For demonstration, we'll simulate a modal.
         const messageBox = document.createElement('div');
         messageBox.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
         messageBox.innerHTML = `
             <div class="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full text-center">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800">New Task</h3>
-                <p class="text-gray-600 mb-6">This button would typically open a form to create a new task!</p>
-                <button id="closeMessageBox" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">Got It!</button>
+                <h3 class="text-lg font-semibold mb-4 text-gray-800">`+msg+`</h3>
+                <button id="closeMessageBox" class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">OK</button>
             </div>
         `;
         document.body.appendChild(messageBox);
@@ -119,14 +104,29 @@ const [isModalOpen, setIsModalOpen] = useState(false);
         document.getElementById('closeMessageBox').addEventListener('click', () => {
             messageBox.remove();
         });
-        console.log('Create New Task button clicked!');
+        
     };
 
     // Conceptual Drag and Drop Handlers (Frontend only, no state management yet)
     // These functions provide visual feedback for drag-and-drop.
     // For full functionality, you'd need a state management solution (e.g., React Context, Zustand)
     // to update the task lists and re-render components.
-
+    const handleAddTask = async (Data) => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (!user) return;
+        try {
+            if (Data.categorie === 'A Faire' ) Data.categorie = 'to-do';
+              else if (Data.categorie === 'En Cours' ) Data.categorie = 'in-progress';
+              else if (Data.categorie === 'Terminé') Data.categorie = 'done';
+              else Data.categorie = categorie.charAt(0).toUpperCase() + Data.categorie.slice(1);
+            console.log("create: ",Data.categorie);
+            await createTask(user.email, Data);
+            messageBox("La tâche est ajouter avec success");
+        } catch (error) {
+            messageBox("Erreur lors de l'ajout de tâche : " + error);
+        }
+    };
  
     const initials = displayName
       .split(" ")
@@ -187,7 +187,7 @@ const [isModalOpen, setIsModalOpen] = useState(false);
                             Ajouter une tâche
                         </button>
                     </div>
-                    {isModalOpen && <AddTaskForm onClose={() => setIsModalOpen(false)} />}
+                    {isModalOpen && <AddTaskForm onSubmit={handleAddTask} onClose={() => setIsModalOpen(false)} />}
                     {/* Task Sections */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                        

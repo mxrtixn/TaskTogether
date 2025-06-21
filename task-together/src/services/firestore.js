@@ -25,7 +25,7 @@ export const createTask = async (userId, taskData) => {
 
 // Obtenir les tâches d’un utilisateur en temps réel
 export const getUserTasks = (userId, callback) => {
-  const q = query(collection(db, "tasks"), where("userId", "==", userId)); // ✅ corrigé ici aussi
+  const q = query(collection(db, "tasks"), where("userId", "==", userId)); // corrigé ici aussi
   return onSnapshot(q, (snapshot) => {
     const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     callback(tasks);

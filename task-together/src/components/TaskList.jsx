@@ -1,10 +1,11 @@
 import TaskItem from "./TaskItem";
+import { updateTask } from "../services/firestore";
 export default function TaskList({tasks, category, setTaskLists}){
     let name = ''
     if (category === 'to-do' || category === 'todo') name = 'A faire';
         else if (category === 'in-progress' || category === 'progress') name = 'En Cours';
-        else if (category === 'done') name = 'Términer';
-        else category = category.charAt(0).toUpperCase() + category.slice(1);
+        else if (category === 'done') name = 'Terminé';
+        else name = category.charAt(0).toUpperCase() + category.slice(1);
 
     const handleDragOver = (e) => {
         e.preventDefault(); // Essential to allow a drop
@@ -32,9 +33,9 @@ export default function TaskList({tasks, category, setTaskLists}){
         }
 
         // Update the taskLists state
-        setTaskLists(prevTaskLists => {
+        setTaskLists(async prevTaskLists => {
             const newLists = { ...prevTaskLists };
-
+            
             // Find the task in the source column
             const sourceTasks = newLists[sourceColumnId];
             const taskIndex = sourceTasks.findIndex(task => task.id === taskId);
@@ -44,8 +45,10 @@ export default function TaskList({tasks, category, setTaskLists}){
                 newLists[targetColumnId].push(movedTask); // Add to target
             }
 
+            await updateTask(taskId, {categorie: targetColumnId});
             return newLists; // Return new state to trigger re-render
         });
+
     };
     
         
@@ -65,7 +68,11 @@ export default function TaskList({tasks, category, setTaskLists}){
 
                     {
                         tasks.map(task => {
-                            return <TaskItem key={task.id} id={task.id} title={task.title} description={task.description} dueDate={task.dueDate} tag={task.tag}/>
+                            if (task.categorie === 'to-do' || task.categorie === 'todo') task.categorie = 'A faire';
+                            else if (task.categorie === 'in-progress' || task.categorie === 'progress') task.categorie = 'En Cours';
+                            else if (task.categorie === 'done') task.categorie = 'Terminé';
+                            else task.categorie = task.categorie.charAt(0).toUpperCase() + task.categorie.slice(1);
+                            return <TaskItem key={task.id} id={task.id} title={task.title} description={task.description} dueDate={task.dueDate} tag={task.priority} categorie={task.categorie}/>
                         })
                     }
                 </div>

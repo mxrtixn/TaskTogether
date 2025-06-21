@@ -1,53 +1,64 @@
 import { useState } from 'react';
 
 export default function TaskForm({ formData, onChange }) {
-  return (
-    <div className="space-y-3 bg-white/80 p-4 rounded-lg shadow-md">
-      <input
-        name="title"
-        value={formData.title}
-        onChange={onChange}
-        placeholder="Titre"
-        className="w-full p-2 border rounded"
-        required
-      />
-      <textarea
-        name="description"
-        value={formData.description}
-        onChange={onChange}
-        placeholder="Description"
-        className="w-full p-2 border rounded"
-      />
-      {/* ✅ Ajout de onChange ici */}
-      <input
-        type="date"
-        name="dueDate"
-        value={formData.dueDate}
-        onChange={onChange}
-        className="w-full mb-3 p-2 border rounded"
-        required
-      />
-      <select
-        name="priority"
-        value={formData.priority}
-        onChange={onChange}
-        className="w-full p-2 border rounded"
-      >
-        <option>None</option>
-        <option>Bas</option>
-        <option>Moyenne</option>
-        <option>Haute</option>
-      </select>
-      <select
-        name="status"
-        value={formData.status}
-        onChange={onChange}
-        className="w-full p-2 border rounded"
-      >
-        <option>A Faire</option>
-        <option>En Cours</option>
-        <option>Terminé</option>
-      </select>
+
+  return (<div className="space-y-2 bg-white/80 p-4 rounded-lg ">
+      <div>
+        <p className='text-gray-800 text-sm font-semibold'>  Title:</p>
+        <input
+          name="title"
+          value={formData.title}
+          onChange={onChange}
+          placeholder="Titre"
+          className="w-full p-2 border rounded"
+          required
+        />
+      </div>
+      <div>
+        <p className='text-gray-800 text-sm font-semibold'>  Description:</p>
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={onChange}
+          placeholder="Description"
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <p className='text-gray-800 text-sm font-semibold'>  Due Date:</p>
+        <input type="date" name="dueDate" 
+          value={formData.dueDate}
+          onChange={onChange}
+          className="w-full mb-3 p-2 border rounded" required />
+      </div>
+      <div>
+
+        <p className='text-gray-800 text-sm font-semibold'>  Périorité:</p>
+        <select
+          name="priority"
+          value={formData.priority}
+          onChange={onChange}
+          className="w-full p-2 border rounded"
+        >
+          <option>None</option>
+          <option>Bas</option>
+          <option>Moyenne</option>
+          <option>Haute</option>
+        </select>
+      </div>
+      <div>
+        <p className='text-gray-800 text-sm font-semibold'>  Status:</p>
+        <select
+          name="categorie"
+          value={formData.categorie}
+          onChange={onChange}
+          className="w-full p-2 border rounded"
+        >
+          <option>A Faire</option>
+          <option>En Cours</option>
+          <option>Terminé</option>
+        </select>
+      </div>
     </div>
   );
 }
