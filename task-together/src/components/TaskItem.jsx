@@ -1,14 +1,18 @@
 import UpdateTaskForm from './UpdateTaskForm'
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { getAuth } from "firebase/auth";
 import { updateTask } from '../services/firestore';
-import { data } from 'react-router-dom';
+import { PencilSquareIcon, ShareIcon } from '@heroicons/react/24/solid';
+import ShareDropdown from './ShareDropdown';
 export default function TaskItem({ id, title, description, dueDate, tag, categorie }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-    const handleUpdateTaskClick = () => {
-      setIsModalOpen(true);
-    };
+  const buttonRef = useRef(null);
+
+
+  const handleUpdateTaskClick = () => {
+    setIsModalOpen(true);
+    
+  };
   const messageBox = (msg) => {
         // In a real application, this would open a modal or navigate to a task creation page.
         // For demonstration, we'll simulate a modal.
@@ -73,24 +77,85 @@ export default function TaskItem({ id, title, description, dueDate, tag, categor
       priority: tag,
     }
   };
+  const [showShare, setShowShare] = useState(false);
+
+  const handleSaveEmails = (emails) => {
+    console.log("Shared with:", emails);
+    setShowShare(false); // optionally hide dropdown after save
+    // TODO: Save to Firebase or backend
+  };
   return (<>
-    {isModalOpen && <UpdateTaskForm formDatad={getDataTask} onSubmit={handleUpdateTask} onClose={() => setIsModalOpen(false)} />}
-    <div
-      onClick={handleUpdateTaskClick}
-      id={id}
-      key={id} // Unique ID for drag-and-drop
-      draggable="true"
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      className="bg-orange-50 p-4 rounded-lg shadow-sm border border-orange-100 cursor-grab active:cursor-grabbing hover:bg-orange-100 transition-colors duration-150"
-    >
-      <h3 className="font-medium text-gray-800 mb-1">{title}</h3>
-      <p className="text-sm text-gray-500">{description}</p>
-      <div className="flex justify-between items-center text-xs text-gray-400 mt-2">
-          <span>Due: {dueDate}</span>
-          <span className={`px-2 py-0.5 ${priorityColorBg} ${priorityColorText} rounded-full`}>{tag}</span>
-      </div>
+  {isModalOpen && (
+    <UpdateTaskForm
+      formDatad={getDataTask}
+      onSubmit={handleUpdateTask}
+      onClose={() => setIsModalOpen(false)}
+    />
+  )}
+
+  <div
+    id={id}
+    key={id}
+    draggable="true"
+    onDragStart={handleDragStart}
+    onDragEnd={handleDragEnd}
+    className="relative bg-orange-50 p-4 rounded-lg shadow-sm border border-orange-100 
+               cursor-grab active:cursor-grabbing hover:bg-orange-100 
+               transition-colors duration-150"
+  >
+    {/* 🔘 Action buttons in top-right */}
+    <div className="absolute top-2 right-1 flex gap-1 z-5">
+      {/* Edit Button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent drag on click
+          handleUpdateTaskClick();
+        }}
+        className="w-8 h-8 rounded-full flex items-center justify-center
+                   bg-orange-100 hover:bg-orange-200 text-orange-800"
+      >
+        <PencilSquareIcon className="w-3 h-3" />
+        <span className="sr-only">Edit</span>
+      </button>
+
+      {/* Share Button */}
+      <button
+        ref={buttonRef}
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent drag on click
+          setShowShare(!showShare);
+        }}
+        className="w-8 h-8 rounded-full flex items-center justify-center
+                   bg-orange-100 hover:bg-orange-200 text-orange-800"
+      >
+        <ShareIcon className="w-3 h-3" />
+        <span className="sr-only">Share</span>
+      </button>
     </div>
-    </>
+
+    {/* Content */}
+    <h3 className="font-medium text-gray-800 mb-1">{title}</h3>
+    <p className="text-sm text-gray-500">{description}</p>
+
+    <div className="flex justify-between items-center text-xs text-gray-400 mt-2">
+      <span>Due: {dueDate}</span>
+      <span
+        className={`px-2 py-0.5 ${priorityColorBg} ${priorityColorText} rounded-full`}
+      >
+        {tag}
+      </span>
+    </div>
+  </div>
+
+  {/* Share dropdown outside the card for absolute positioning */}
+  {showShare && (
+    <ShareDropdown
+      anchorRef={buttonRef}
+      onClose={() => setShowShare(false)}
+      onSave={handleSaveEmails}
+    />
+  )}
+</>
+
   );
 }

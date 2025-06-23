@@ -2,7 +2,7 @@ import TaskItem from "./TaskItem";
 import { updateTask } from "../services/firestore";
 export default function TaskList({tasks, category, setTaskLists}){
     let name = ''
-    if (category === 'to-do' || category === 'todo') name = 'A faire';
+    if (category === 'to-do' || category === 'todo') name = 'A Faire';
         else if (category === 'in-progress' || category === 'progress') name = 'En Cours';
         else if (category === 'done') name = 'Terminé';
         else name = category.charAt(0).toUpperCase() + category.slice(1);
