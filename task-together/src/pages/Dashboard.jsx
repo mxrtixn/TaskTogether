@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { getAuth, signOut } from "firebase/auth";
 import TaskList from '../components/TaskList';
-import { getUserTasks, shareTaskList } from '../services/firestore';
+import { getUserTasks, getSharedTask } from '../services/firestore';
 import AddTaskForm from '../components/AddTaskForm';
 import { createTask } from "../services/firestore";
 
@@ -14,34 +14,54 @@ export default function Dashboard(){
     const handleCreateTaskClick = () => {
         setIsModalOpen(true);
     };
-    useEffect(() => {
-        const auth = getAuth();
-        const user = auth.currentUser;
+useEffect(() => {
+    const auth = getAuth();
+    const user = auth.currentUser;
 
-        if (!user) return;
+    if (!user) return;
 
-        // Start listening to user's tasks
-        
-        const unsubscribe = getUserTasks(user.email, (tasks) => {
-            
-            const grouped = {
-                'to-do' : [],
-                'in-progress' : [],
-                'done':[]
-            };
-            tasks.forEach(task => {
-                let category = task.categorie?.trim().toLowerCase() || 'uncategorized';
-                // Normalize known categories
-                if (!grouped[category]) grouped[category] = [];
-                grouped[category].push(task);
-                setTasksByCategory(grouped);
-                
+    const grouped = {
+        'to-do': [],
+        'in-progress': [],
+        'done': []
+    };
+
+    let userTasks = [];
+    let sharedTasks = [];
+
+    const mergeAndSet = () => {
+        const combined = [...userTasks, ...sharedTasks];
+        const groupedCombined = {
+            'to-do': [],
+            'in-progress': [],
+            'done': [],
+        };
+
+        combined.forEach(task => {
+            let category = task.categorie?.trim().toLowerCase() || 'uncategorized';
+            if (!groupedCombined[category]) groupedCombined[category] = [];
+            groupedCombined[category].push(task);
         });
-    });
-        
-        return () => unsubscribe(); // Stop listening on unmount
-    }, []);
 
+        setTasksByCategory(groupedCombined);
+    };
+
+    const unsubscribeUser = getUserTasks(user.email, (tasks) => {
+        userTasks = tasks;
+        mergeAndSet();
+    });
+
+    const unsubscribeShared = getSharedTask(user.email, (tasks) => {
+        sharedTasks = tasks;
+        mergeAndSet();
+    });
+
+    return () => {
+        unsubscribeUser();
+        unsubscribeShared();
+    };
+}, []);
+    
     // State for managing the visibility of the user settings dropdown
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     // Ref to detect clicks outside the dropdownAdd commentMore actions
@@ -49,7 +69,6 @@ export default function Dashboard(){
     const buttonRef = useRef(null);
     const [email, setEmail] = useState('');
     const [displayName, setDisplayName] = useState('');
-
     const auth = getAuth();
     const handleLogout = async () =>  {
         // Clear auth data (e.g., token, user info)
@@ -192,6 +211,7 @@ export default function Dashboard(){
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                        
                         {Object.entries(tasksByCategory).map(([category, tasks]) => {
+                            console.log("daskboard list: ", category)
                             return <TaskList key={category} category={category} tasks={tasks} setTaskLists={setTasksByCategory}/>
                         })}
                     </div>

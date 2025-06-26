@@ -1,14 +1,25 @@
 import UpdateTaskForm from './UpdateTaskForm'
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { getAuth } from "firebase/auth";
 import { updateTask } from '../services/firestore';
-import { PencilSquareIcon, ShareIcon } from '@heroicons/react/24/solid';
+import { PencilSquareIcon, ShareIcon, XMarkIcon  } from '@heroicons/react/24/solid';
 import ShareDropdown from './ShareDropdown';
+import { getShareWith, saveShareTasks } from '../services/firestore';
+
 export default function TaskItem({ id, title, description, dueDate, tag, categorie }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const buttonRef = useRef(null);
+  const [sharedWith, setSharedWith] = useState([]);
+  const [isSharedWithMe, setSharedWithMe] = useState(false)
+  const auth = getAuth();
+  const user = auth.currentUser;
+  useEffect(() => {
+      getShareWith(id).then((sharedWithList) => {
+          setSharedWith(sharedWithList);
 
-
+      });
+      if (sharedWith.includes(user.email)) setSharedWithMe(true);
+  });
   const handleUpdateTaskClick = () => {
     setIsModalOpen(true);
     
@@ -33,8 +44,7 @@ export default function TaskItem({ id, title, description, dueDate, tag, categor
         
     };
   const handleUpdateTask = async (Data) => {
-          const auth = getAuth();
-          const user = auth.currentUser;
+          
           if (!user) return;
           try {
               if (Data.categorie === 'A Faire' ) Data.categorie = 'to-do';
@@ -66,10 +76,11 @@ export default function TaskItem({ id, title, description, dueDate, tag, categor
     const handleDragEnd = (e) => {
         e.currentTarget.classList.remove('opacity-50'); // Remove visual feedback after drag ends
     };
-    
+  
   const getDataTask = () => {
     
     return {
+      taskId: id,
       title: title,
       description: description,
       dueDate: dueDate,
@@ -77,85 +88,165 @@ export default function TaskItem({ id, title, description, dueDate, tag, categor
       priority: tag,
     }
   };
+  const removeMyEmail=()=>{
+    const sharedWithoutMe = sharedWith.filter(email => email !== user.email);
+    handleSaveEmails(sharedWithoutMe);
+    setSharedWith( sharedWithoutMe);
+    setSharedWithMe(false);
+  }
+
   const [showShare, setShowShare] = useState(false);
 
-  const handleSaveEmails = (emails) => {
-    console.log("Shared with:", emails);
-    setShowShare(false); // optionally hide dropdown after save
-    // TODO: Save to Firebase or backend
+  const handleSaveEmails = async (emails) => {
+    await saveShareTasks(id, emails)
   };
+  if (isSharedWithMe == false)
+ 
   return (<>
-  {isModalOpen && (
-    <UpdateTaskForm
-      formDatad={getDataTask}
-      onSubmit={handleUpdateTask}
-      onClose={() => setIsModalOpen(false)}
-    />
-  )}
+      {isModalOpen && (
+        
+        <UpdateTaskForm
+          formDatad={getDataTask()}
+          onSubmit={handleUpdateTask}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
 
-  <div
-    id={id}
-    key={id}
-    draggable="true"
-    onDragStart={handleDragStart}
-    onDragEnd={handleDragEnd}
-    className="relative bg-orange-50 p-4 rounded-lg shadow-sm border border-orange-100 
-               cursor-grab active:cursor-grabbing hover:bg-orange-100 
-               transition-colors duration-150"
-  >
-    {/* 🔘 Action buttons in top-right */}
-    <div className="absolute top-2 right-1 flex gap-1 z-5">
-      {/* Edit Button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation(); // Prevent drag on click
-          handleUpdateTaskClick();
-        }}
-        className="w-8 h-8 rounded-full flex items-center justify-center
-                   bg-orange-100 hover:bg-orange-200 text-orange-800"
+      <div
+        id={id}
+        key={id}
+        draggable="true"
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        className="relative bg-orange-50 p-4 rounded-lg shadow-sm border border-orange-100 
+                  cursor-grab active:cursor-grabbing hover:bg-orange-100 
+                  transition-colors duration-150"
       >
-        <PencilSquareIcon className="w-3 h-3" />
-        <span className="sr-only">Edit</span>
-      </button>
+        {/* Action buttons in top-right */}
+        <div className="absolute top-2 right-1 flex gap-1 z-5">
+          {/* Edit Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent drag on click
+              handleUpdateTaskClick();
+            }}
+            className="w-8 h-8 rounded-full flex items-center justify-center
+                      bg-orange-100 hover:bg-orange-200 text-orange-800"
+          >
+            <PencilSquareIcon className="w-3 h-3" />
+            <span className="sr-only">Edit</span>
+          </button>
 
-      {/* Share Button */}
-      <button
-        ref={buttonRef}
-        onClick={(e) => {
-          e.stopPropagation(); // Prevent drag on click
-          setShowShare(!showShare);
-        }}
-        className="w-8 h-8 rounded-full flex items-center justify-center
-                   bg-orange-100 hover:bg-orange-200 text-orange-800"
-      >
-        <ShareIcon className="w-3 h-3" />
-        <span className="sr-only">Share</span>
-      </button>
-    </div>
+          {/* Share Button */}
+          <button
+            ref={buttonRef}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent drag on click
+              setShowShare(!showShare);
+            }}
+            className="w-8 h-8 rounded-full flex items-center justify-center
+                      bg-orange-100 hover:bg-orange-200 text-orange-800"
+          >
+            <ShareIcon className="w-3 h-3" />
+            <span className="sr-only">Share</span>
+          </button>
+        </div>
 
-    {/* Content */}
-    <h3 className="font-medium text-gray-800 mb-1">{title}</h3>
-    <p className="text-sm text-gray-500">{description}</p>
+        {/* Content */}
+        <h3 className="font-medium text-gray-800 mb-1">{title}</h3>
+        <p className="text-sm text-gray-500">{description}</p>
 
-    <div className="flex justify-between items-center text-xs text-gray-400 mt-2">
-      <span>Due: {dueDate}</span>
-      <span
-        className={`px-2 py-0.5 ${priorityColorBg} ${priorityColorText} rounded-full`}
-      >
-        {tag}
-      </span>
-    </div>
-  </div>
+        <div className="flex justify-between items-center text-xs text-gray-400 mt-2">
+          <span>Due: {dueDate}</span>
+          <span
+            className={`px-2 py-0.5 ${priorityColorBg} ${priorityColorText} rounded-full`}
+          >
+            {tag}
+          </span>
+        </div>
+      </div>
 
-  {/* Share dropdown outside the card for absolute positioning */}
-  {showShare && (
-    <ShareDropdown
-      anchorRef={buttonRef}
-      onClose={() => setShowShare(false)}
-      onSave={handleSaveEmails}
-    />
-  )}
-</>
+      {/* Share dropdown outside the card for absolute positioning */}
+      {showShare && (
+        <ShareDropdown
+          anchorRef={buttonRef}
+          currentEmails={() => {
+            return sharedWith;
+          }}
+          onClose={() => setShowShare(false)}
+          onSave={handleSaveEmails}
+        />
+      )}
+
+      
+    </>
 
   );
+  else {
+    return (<>
+      {isModalOpen && (
+        
+        <UpdateTaskForm
+          formDatad={getDataTask()}
+          onSubmit={handleUpdateTask}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+
+      <div
+        id={id}
+        key={id}
+        draggable="true"
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        className="relative bg-yellow-50 p-4 rounded-lg shadow-sm border border-orange-100 
+                  cursor-grab active:cursor-grabbing hover:bg-yellow-100 
+                  transition-colors duration-150"
+      >
+        {/* Action buttons in top-right */}
+        <div className="absolute top-2 right-1 flex gap-1 z-5">
+          {/* Edit Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent drag on click
+              handleUpdateTaskClick();
+            }}
+            className="w-8 h-8 rounded-full flex items-center justify-center
+                      bg-yellow-100 hover:bg-yellow-200 text-orange-800"
+          >
+            <PencilSquareIcon className="w-3 h-3" />
+            <span className="sr-only">Edit</span>
+          </button>
+
+          {/* Share Button */}
+          <button
+            ref={buttonRef}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent drag on click
+              removeMyEmail();
+            }}
+            className="w-8 h-8 rounded-full flex items-center justify-center
+                      bg-yellow-100 hover:bg-yellow-200 text-yellow-800"
+          >
+            <XMarkIcon  className="w-3 h-3" />
+            <span className="sr-only">Share</span>
+          </button>
+        </div>
+
+        {/* Content */}
+        <h3 className="font-medium text-gray-800 mb-1">{title}</h3>
+        <p className="text-sm text-gray-500">{description}</p>
+
+        <div className="flex justify-between items-center text-xs text-gray-400 mt-2">
+          <span> <span>Due: {dueDate} - </span> <span className='text-gray-500 italic'>Partagé avec moi</span></span>
+          <span
+            className={`px-2 py-0.5 ${priorityColorBg} ${priorityColorText} rounded-full`}
+          >
+            {tag}
+          </span>
+        </div>
+      </div>
+      
+    </>);
+  }
 }

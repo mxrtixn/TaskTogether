@@ -1,12 +1,14 @@
 import {useState, useEffect } from "react";
-
-export default function ShareDropdown({ anchorRef, onClose, onSave }) {
+import { getAuth } from "firebase/auth";
+export default function ShareDropdown({ currentEmails, anchorRef, onClose, onSave }) {
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [emailInput, setEmailInput] = useState("");
-  const [emails, setEmails] = useState([]);
+  const [emails, setEmails] = useState(currentEmails);
   const dropdownWidth = 280; // px
 
   useEffect(() => {
+    
+
     if (anchorRef.current) {
       const rect = anchorRef.current.getBoundingClientRect();
 
@@ -39,8 +41,17 @@ export default function ShareDropdown({ anchorRef, onClose, onSave }) {
     }
   };
 
-  const validateEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validateEmail = (email) =>{
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (email!=user.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      return true;
+    }else{
+      return false;
+    }
+    
+  }
+    
 
   const removeEmail = (email) =>
     setEmails(emails.filter((e) => e !== email));

@@ -17,7 +17,7 @@ export default function TaskList({tasks, category, setTaskLists}){
         // Remove visual feedback from the container
         e.currentTarget.classList.remove('bg-blue-50', 'border-blue-300');
     };
-
+    
     const handleDrop = (e) => {
         e.preventDefault();
         e.currentTarget.classList.remove('bg-blue-50', 'border-blue-300');
@@ -31,7 +31,7 @@ export default function TaskList({tasks, category, setTaskLists}){
         if (!taskId || !sourceColumnId || !targetColumnId || sourceColumnId === targetColumnId) {
             return;
         }
-
+    
         // Update the taskLists state
         setTaskLists(async prevTaskLists => {
             const newLists = { ...prevTaskLists };
@@ -51,7 +51,6 @@ export default function TaskList({tasks, category, setTaskLists}){
 
     };
     
-        
     return <div
                 className="bg-white rounded-xl shadow-lg p-6 border border-gray-200"
                 data-column-id={category} // ID for drag-and-drop targeting
@@ -60,7 +59,7 @@ export default function TaskList({tasks, category, setTaskLists}){
                 onDrop={handleDrop}
             >
                 <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <span className="bg-gray-200 text-gray-600 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mr-2">3</span>
+                    <span className="bg-gray-200 text-gray-600 rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold mr-2"></span>
                     {name}
                 </h2>
                 <div className="space-y-4">
@@ -68,11 +67,13 @@ export default function TaskList({tasks, category, setTaskLists}){
 
                     {
                         tasks.map(task => {
-                            if (task.categorie === 'to-do' || task.categorie === 'todo') task.categorie = 'A faire';
-                            else if (task.categorie === 'in-progress' || task.categorie === 'progress') task.categorie = 'En Cours';
-                            else if (task.categorie === 'done') task.categorie = 'Terminé';
-                            else task.categorie = task.categorie.charAt(0).toUpperCase() + task.categorie.slice(1);
-                            return <TaskItem key={task.id} id={task.id} title={task.title} description={task.description} dueDate={task.dueDate} tag={task.priority} categorie={task.categorie}/>
+                            let taskcategorie = '';
+                            console.log("taskListe: ", task);
+                            if (task.categorie === 'to-do' || task.categorie === 'todo') taskcategorie = 'A Faire';
+                            else if (task.categorie === 'in-progress' || task.categorie === 'progress') taskcategorie = 'En Cours';
+                            else if (task.categorie === 'done') taskcategorie = 'Terminé';
+                            else taskcategorie = 'extra';
+                            return <TaskItem key={task.id} id={task.id} title={task.title} description={task.description} dueDate={task.dueDate} tag={task.priority} categorie={taskcategorie}/>
                         })
                     }
                 </div>

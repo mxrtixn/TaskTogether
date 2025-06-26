@@ -31,6 +31,13 @@ export const getUserTasks = (userId, callback) => {
     callback(tasks);
   });
 };
+export const getSharedTask = (userId, callback) => {
+  const q = query(collection(db, "tasks"), where("sharedWith", "array-contains", userId)); // corrigé ici aussi
+  return onSnapshot(q, (snapshot) => {
+    const tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    callback(tasks);
+  });
+}
 
 // Mettre à jour une tâche
 export const updateTask = async (taskId, updatedData) => {
@@ -41,23 +48,43 @@ export const updateTask = async (taskId, updatedData) => {
 // Supprimer une tâche
 export const deleteTask = async (taskId) => {
   const taskRef = doc(db, "tasks", taskId);
+  
   return await deleteDoc(taskRef);
+  
 };
 
 // Partager la liste de tâches
-export const shareTaskList = async (ownerId, sharedUserEmail) => {
-  const sharedRef = doc(db, "sharedLists", ownerId);
-  const docSnap = await getDoc(sharedRef);
+export const saveShareTasks = async (taskId, Emails) => {
+  const taskRef = doc(db, "tasks", taskId);
+  const docSnap = await getDoc(taskRef);
 
   if (docSnap.exists()) {
-    const existing = docSnap.data().sharedWith || [];
-    await updateDoc(sharedRef, {
-      sharedWith: [...new Set([...existing, sharedUserEmail])]
+    
+    await updateDoc(taskRef, {
+      sharedWith: Emails,
     });
   } else {
-    await setDoc(sharedRef, {
-      ownerId,
-      sharedWith: [sharedUserEmail],
+    await setDoc(taskRef, {
+      sharedWith: Emails,
     });
+  }
+};
+// Obtenir la liste de tâches partager
+export const getShareWith = async (taskId) => {
+ try {
+    const taskRef = doc(db, "tasks", taskId);
+    const taskSnap = await getDoc(taskRef);
+
+    if (taskSnap.exists()) {
+      const taskData = taskSnap.data();
+      const sharedWith = taskData.sharedWith || [];
+      return sharedWith;
+    } else {
+      
+      return [];
+    }
+  } catch (error) {
+    
+    return [];
   }
 };
