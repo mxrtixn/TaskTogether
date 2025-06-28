@@ -5,7 +5,6 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute'
 import NotFound from './pages/NotFound';
-import AccountingModuleDemo from './pages/AccoutingModel';
 export default function AppRouter() {
   return (
     <BrowserRouter>
