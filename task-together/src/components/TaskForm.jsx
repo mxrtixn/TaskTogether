@@ -1,10 +1,9 @@
-import { useState } from 'react';
 
 export default function TaskForm({ formData, onChange }) {
 
   return (<div className="space-y-2 bg-white/80 p-4 rounded-lg ">
       <div>
-        <p className='text-gray-800 text-sm font-semibold'>  Title:</p>
+        <p className='text-gray-800 text-sm font-semibold'>  Titre:</p>
         <input
           name="title"
           value={formData.title}
@@ -25,7 +24,7 @@ export default function TaskForm({ formData, onChange }) {
         />
       </div>
       <div>
-        <p className='text-gray-800 text-sm font-semibold'>  Due Date:</p>
+        <p className='text-gray-800 text-sm font-semibold'>  Date d'échéance:</p>
         <input type="date" name="dueDate" 
           value={formData.dueDate}
           onChange={onChange}
@@ -47,7 +46,7 @@ export default function TaskForm({ formData, onChange }) {
         </select>
       </div>
       <div>
-        <p className='text-gray-800 text-sm font-semibold'>  Status:</p>
+        <p className='text-gray-800 text-sm font-semibold'>  Statut:</p>
         <select
           name="categorie"
           value={formData.categorie}

@@ -22,15 +22,13 @@ export default function NavBar(){
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex space-x-8">
           <a href="/" className="text-gray-700 hover:text-orange-500 transition duration-300 ease-in-out font-medium">Home</a>
-          <a href="#features" className="text-gray-700 hover:text-orange-500 transition duration-300 ease-in-out font-medium">Features</a>
-          <a href="#" className="text-gray-700 hover:text-orange-500 transition duration-300 ease-in-out font-medium">About Us</a>
-          <a href="#" className="text-gray-700 hover:text-orange-500 transition duration-300 ease-in-out font-medium">Contact</a>
+          <a href="#features" className="text-gray-700 hover:text-orange-500 transition duration-300 ease-in-out font-medium">Fonctionnalités</a>
         </div>
 
         {/* Sign Up Button (Desktop) */}
         <div className="hidden md:block">
           <button id='login' onClick={onloginClick} className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
-            Log In
+            Se connecter
           </button>
         </div>
 
@@ -56,12 +54,11 @@ export default function NavBar(){
       {isMobileMenuOpen && (
         <div className="md:hidden mt-4 bg-white border-t border-gray-100 py-2 space-y-2">
           <a href="/" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-orange-500 font-medium">Home</a>
-          <a href="#features" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-orange-500 font-medium">Features</a>
-          <a href="#" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-orange-500 font-medium">About Us</a>
-          <a href="#" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-orange-500 font-medium">Contact</a>
+          <a href="#features" className="block px-6 py-2 text-gray-700 hover:bg-gray-50 hover:text-orange-500 font-medium">Fonctionnalités</a>
+
           <div className="px-6 pt-2 pb-1">
             <button onClick={onloginClick} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300 ease-in-out">
-              Log In
+              Se connecter
             </button>
           </div>
         </div>

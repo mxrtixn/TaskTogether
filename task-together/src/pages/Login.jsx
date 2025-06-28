@@ -28,9 +28,9 @@ function Login() {
 
       try {
         const msg = await loginUser(email, password);
-
+        console.log('login :', msg);
         if (msg.success) {
-          console.log(msg.user);
+          
           localStorage.setItem("userEmail", msg.user.email);
           localStorage.setItem("displayName", msg.user.displayName || "User");
           navigate('/dashboard');
@@ -41,17 +41,17 @@ function Login() {
         alert('Login failed: ' + err.message);
       }
     });
-  }, [navigate]);
+  }, []);
 
   return (
     <div className="divbody min-h-screen bg-blue-50 flex justify-center items-center">
       <div className="login-container">
-        <h2 className="login-title">Login</h2>
+        <h2 className="login-title">Connecter</h2>
         <input type="email" placeholder="Email" />
         <input type="password" placeholder="Password" />
-        <button>Login</button>
+        <button>se connecter</button>
         <p className="router-to-register">
-          Don't have an account? <a href="/register">Register</a>
+          Vous n'avez pas de compte ? <a href="/register">S'inscrire</a>
         </p>
       </div>
     </div>

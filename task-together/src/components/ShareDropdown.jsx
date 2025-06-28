@@ -4,7 +4,7 @@ export default function ShareDropdown({ currentEmails, anchorRef, onClose, onSav
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [emailInput, setEmailInput] = useState("");
   const [emails, setEmails] = useState(currentEmails);
-  const dropdownWidth = 280; // px
+  const dropdownWidth = 280;
 
   useEffect(() => {
     
@@ -75,7 +75,7 @@ export default function ShareDropdown({ currentEmails, anchorRef, onClose, onSav
         maxWidth: "90vw",
       }}
     >
-      <h3 className="text-sm font-semibold mb-2">Share with email</h3>
+      <h3 className="text-sm font-semibold mb-2">Partager avec Emails</h3>
 
       <div className="flex flex-wrap gap-2 mb-2">
         {emails.map((email) => (
@@ -96,7 +96,7 @@ export default function ShareDropdown({ currentEmails, anchorRef, onClose, onSav
 
       <input
         type="text"
-        placeholder="Type email & press Enter"
+        placeholder="Tapez l'e-mail et appuyez sur Entrée"
         value={emailInput}
         onChange={(e) => setEmailInput(e.target.value)}
         onKeyDown={handleKeyDown}
@@ -108,13 +108,13 @@ export default function ShareDropdown({ currentEmails, anchorRef, onClose, onSav
           onClick={handleDiscard}
           className="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
         >
-          Discard
+          Annuler
         </button>
         <button
           onClick={handleSave}
           className="text-sm px-3 py-1 bg-blue-500 text-white hover:bg-blue-600 rounded"
         >
-          Save
+          Partager
         </button>
       </div>
     </div>

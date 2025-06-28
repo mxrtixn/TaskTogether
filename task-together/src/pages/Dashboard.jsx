@@ -14,6 +14,7 @@ export default function Dashboard(){
     const handleCreateTaskClick = () => {
         setIsModalOpen(true);
     };
+    
 useEffect(() => {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -87,8 +88,9 @@ useEffect(() => {
         if (name == ""){
             window.location.href = '/login';
         }else{
-            setEmail(storedEmail)
-            setDisplayName(name)
+            console.log("name : ", name)
+            setEmail(storedEmail);
+            setDisplayName(name);
         }
         const handleClickOutside = (event) => {
             // Close dropdown if click is outside the dropdown and the button
@@ -146,13 +148,18 @@ useEffect(() => {
             messageBox("Erreur lors de l'ajout de tâche : " + error);
         }
     };
- 
-    const initials = displayName
+    let initials;
+    try {
+    initials = displayName
       .split(" ")
       .filter(word => word.length > 0)     // Remove any empty words
       .slice(0, 2)                          // First and last name only
       .map(word => word[0].toUpperCase())  // Get first letter of each
-      .join("");                           // Join the letters
+      .join(""); 
+    }catch (ex){
+        initials = 'test';
+    };
+                              // Join the letters
   return ( <div className="overflow-x-hidden min-h-screen flex flex-col bg-slate-50">
             
             <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between sticky top-0 z-10 border-b border-gray-200">
@@ -211,7 +218,6 @@ useEffect(() => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                        
                         {Object.entries(tasksByCategory).map(([category, tasks]) => {
-                            console.log("daskboard list: ", category)
                             return <TaskList key={category} category={category} tasks={tasks} setTaskLists={setTasksByCategory}/>
                         })}
                     </div>

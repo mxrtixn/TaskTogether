@@ -1,26 +1,30 @@
-import React, { useState } from 'react';
-//import { registerUser } from '../services/auth';
+import { useState } from 'react';
 import './styles/Register.css'; // Import CSS
-import { registerUser } from '../services/auth'; 
+import { useNavigate } from 'react-router-dom';
+import { registerUser } from '../services/auth';
 export default function Register() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setPseudo] = useState('');
   const [error, setError] = useState('');
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await registerUser(email, password, displayName);
-      alert('Inscription réussie !');
+      const user = await registerUser(email, password, displayName);
+      localStorage.setItem("displayName", user.displayName || "User");
+      alert('Insription réussie !');
+      navigate("/login");
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
+    <div className='divbody min-h-screen bg-blue-50 flex justify-center items-center'>
     <div className="register-container">
-      <h1 className="register-title">Register</h1>
+      <h1 className="register-title">S'inscrire</h1>
       
       {error && <p className="error-message">{error}</p>}
 
@@ -37,7 +41,7 @@ export default function Register() {
           type="text"
           value={displayName}
           onChange={(e) => setPseudo(e.target.value)}
-          placeholder="Display Name"
+          placeholder="Pseudo"
           className="register-input"
           required
         />
@@ -51,10 +55,10 @@ export default function Register() {
           minLength="6"
         />
         <button className="register-button" onClick={handleSubmit}>
-          Register
+          S'inscrire
         </button>
       </form>
-      <p className='router-to-login'>I have an account? <a href="/login">Log In</a></p>
-    </div>
+      <p className='router-to-login'>Vous avez un compte ? <a href="/login">Se Connecter</a></p>
+    </div></div>
   );
 }

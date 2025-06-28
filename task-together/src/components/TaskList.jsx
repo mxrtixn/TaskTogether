@@ -68,7 +68,7 @@ export default function TaskList({tasks, category, setTaskLists}){
                     {
                         tasks.map(task => {
                             let taskcategorie = '';
-                            console.log("taskListe: ", task);
+                            
                             if (task.categorie === 'to-do' || task.categorie === 'todo') taskcategorie = 'A Faire';
                             else if (task.categorie === 'in-progress' || task.categorie === 'progress') taskcategorie = 'En Cours';
                             else if (task.categorie === 'done') taskcategorie = 'Terminé';
