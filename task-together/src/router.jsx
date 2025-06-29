@@ -5,11 +5,8 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute'
 import NotFound from './pages/NotFound';
-<<<<<<< Updated upstream
-=======
 
 // Composant de routage principal de l'application
->>>>>>> Stashed changes
 export default function AppRouter() {
   return (
     <BrowserRouter>
