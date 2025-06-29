@@ -1,7 +1,8 @@
-
+// Composant pour le formulaire de création ou modification de tâche
 export default function TaskForm({ formData, onChange }) {
 
   return (<div className="space-y-2 bg-white/80 p-4 rounded-lg ">
+      {/* Champ pour le titre de la tâche */}
       <div>
         <p className='text-gray-800 text-sm font-semibold'>  Titre:</p>
         <input
@@ -13,6 +14,7 @@ export default function TaskForm({ formData, onChange }) {
           required
         />
       </div>
+      {/* Champ pour la description de la tâche */}
       <div>
         <p className='text-gray-800 text-sm font-semibold'>  Description:</p>
         <textarea
@@ -23,6 +25,7 @@ export default function TaskForm({ formData, onChange }) {
           className="w-full p-2 border rounded"
         />
       </div>
+      {/* Champ pour la date d'échéance */}
       <div>
         <p className='text-gray-800 text-sm font-semibold'>  Date d'échéance:</p>
         <input type="date" name="dueDate" 
@@ -30,8 +33,8 @@ export default function TaskForm({ formData, onChange }) {
           onChange={onChange}
           className="w-full mb-3 p-2 border rounded" required />
       </div>
+      {/* Sélecteur de priorité */}
       <div>
-
         <p className='text-gray-800 text-sm font-semibold'>  Périorité:</p>
         <select
           name="priority"
@@ -45,6 +48,7 @@ export default function TaskForm({ formData, onChange }) {
           <option>Haute</option>
         </select>
       </div>
+      {/* Sélecteur de statut/catégorie */}
       <div>
         <p className='text-gray-800 text-sm font-semibold'>  Statut:</p>
         <select

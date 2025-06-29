@@ -1,19 +1,28 @@
-/* Sidebar + Compact Dashboard Styles */
+/* Styles principaux pour le tableau de bord et la barre latérale */
+
+/* Police principale de l'application */
 body {
     font-family: 'Inter', sans-serif;
 }
-/* Custom scrollbar for better aesthetics, Notion-like */
+
+/* Personnalisation de la barre de défilement (style Notion) */
 ::-webkit-scrollbar {
     width: 8px;
 }
+
+/* Couleur de fond de la piste de la barre de défilement */
 ::-webkit-scrollbar-track {
-    background: #F1F5F9; /* bg-slate-100 */
+    background: #F1F5F9; /* Couleur de fond claire */
     border-radius: 10px;
 }
+
+/* Couleur et style du curseur de la barre de défilement */
 ::-webkit-scrollbar-thumb {
-    background: #CBD5E1; /* bg-slate-400 */
+    background: #CBD5E1; /* Couleur du curseur */
     border-radius: 10px;
 }
+
+/* Changement de couleur du curseur au survol */
 ::-webkit-scrollbar-thumb:hover {
-    background: #94A3B8; /* bg-slate-500 */
+    background: #94A3B8; /* Couleur au survol */
 }

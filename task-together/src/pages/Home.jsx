@@ -5,8 +5,7 @@ import NavBar from '../components/Navbar'
 import './styles/Home.css'
 import ilustration from '../img/productivity-illustration.png';
 
-
-// Hero Section Component
+// Composant pour la section d'accueil (Hero)
 const HeroSection = ({onClick}) => (
   <section className="bg-gradient-to-br from-yellow-300 to-orange-500 text-white py-20 px-6 md:py-32 md:px-12 text-center rounded-b-xl shadow-lg w-full">
     <div className="container mx-auto max-w-4xl">
@@ -14,7 +13,8 @@ const HeroSection = ({onClick}) => (
         Organisez votre vie, <br className="hidden sm:inline" />Partagez vos objectifs
       </h1>
       <p className="text-lg md:text-xl mb-10 opacity-90">
-        TaskTogether est votre partenaire idéal pour une gestion des tâches simplifiée et une collaboration fluide. Agissez ensemble.      </p>
+        TaskTogether est votre partenaire idéal pour une gestion des tâches simplifiée et une collaboration fluide. Agissez ensemble.
+      </p>
       <button onClick={onClick} className="bg-white text-orange-500 hover:bg-gray-100 font-bold py-4 px-10 rounded-full text-xl shadow-xl transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-300">
         Commencez gratuitement
       </button>
@@ -22,7 +22,7 @@ const HeroSection = ({onClick}) => (
   </section>
 );
 
-// Features Section Component
+// Composant pour la section des fonctionnalités
 const FeaturesSection = () => (
   <section id="features" className="py-16 px-6 md:py-24 md:px-12 bg-white w-full">
     <div className="container mx-auto">
@@ -30,7 +30,7 @@ const FeaturesSection = () => (
         Pourquoi choisir TaskTogether ?
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10">
-        {/* Feature 1: Intuitive Task Management */}
+        {/* Fonctionnalité 1 : Gestion intuitive des tâches */}
         <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out border border-gray-100 transform hover:-translate-y-1">
           <div className="text-orange-500 mb-4 flex justify-center">
             <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -42,8 +42,7 @@ const FeaturesSection = () => (
             Créez, organisez et suivez facilement vos tâches personnelles et professionnelles grâce à notre interface claire et intuitive. Maîtrisez vos échéances et vos priorités.
           </p>
         </div>
-
-        {/* Feature 2: Seamless Collaboration */}
+        {/* Fonctionnalité 2 : Collaboration transparente */}
         <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out border border-gray-100 transform hover:-translate-y-1">
           <div className="text-yellow-500 mb-4 flex justify-center">
             <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -55,13 +54,12 @@ const FeaturesSection = () => (
             Partagez des tâches avec vos collègues, votre famille ou vos amis. Attribuez des tâches, mettez-les à jour et suivez leur progression ensemble en temps réel.
           </p>
         </div>
-
       </div>
     </div>
   </section>
 );
 
-// How It Works/About Section Component
+// Composant pour la section "Comment ça marche"
 const HowItWorksSection = () => (
   <section className="py-16 px-6 md:py-24 md:px-12 bg-yellow-50 text-gray-900 w-full">
     <div className="container mx-auto max-w-5xl flex flex-col md:flex-row items-center justify-between gap-12">
@@ -85,7 +83,7 @@ const HowItWorksSection = () => (
   </section>
 );
 
-// Call to Action Section Component
+// Composant pour la section d'appel à l'action
 const CallToActionSection = ({onClick}) => (
   <section className="bg-orange-500 py-20 px-6 md:py-24 md:px-12 text-white text-center rounded-t-xl shadow-lg w-full">
     <div className="container mx-auto max-w-3xl">
@@ -102,7 +100,7 @@ const CallToActionSection = ({onClick}) => (
   </section>
 );
 
-// Footer Section Component
+// Composant pour le pied de page
 const FooterSection = () => (
   <footer className="bg-gray-800 text-white py-10 px-6 md:px-12 rounded-t-xl w-full">
     <div className="container mx-auto text-center md:flex md:justify-between md:items-center">
@@ -118,22 +116,24 @@ const FooterSection = () => (
   </footer>
 );
 
-// Scroll to Top Button Component
+// Composant pour le bouton de retour en haut de page
 const ScrollToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
 
+  // Affiche ou masque le bouton selon la position de défilement
   const toggleVisibility = () => {
-    if (window.scrollY > 300) { // Show button after scrolling 300px
+    if (window.scrollY > 300) {
       setIsVisible(true);
     } else {
       setIsVisible(false);
     }
   };
 
+  // Fait défiler la page vers le haut
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth' // Smooth scroll
+      behavior: 'smooth'
     });
   };
 
@@ -153,19 +153,23 @@ const ScrollToTopButton = () => {
       title="Go to top"
       aria-label="Scroll to top"
     >
-      &#8593; {/* Up arrow character */}
+      &#8593;
     </button>
   );
 };
 
-
+// Composant principal de la page d'accueil
 const Home = () => {
   const [displayName, setDisplayName] = useState('');
   const auth = getAuth();
   const navigate = useNavigate();
+
+  // Redirige vers la page d'inscription lors du clic sur le bouton
   const onregisterClick=()=>{
      navigate('/register');
   };
+
+  // Met à jour le nom d'affichage de l'utilisateur connecté
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -175,7 +179,8 @@ const Home = () => {
     return () => unsubscribe();
   }, [auth]);
 
-  return (<div className="min-h-screen bg-gray-50 text-gray-800">
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-800">
       <NavBar />
       <HeroSection onClick={onregisterClick}/>
       <FeaturesSection />

@@ -1,8 +1,10 @@
+/* Import de la police Rubik Mono One depuis Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
+
+/* Style du conteneur principal de la page de connexion */
 .divbody {
   margin: 12;
   padding: 12;
-  /*font-family: 'Rubik Mono One', sans-serif;*/
   height: 100vh;
   background: linear-gradient(45deg, #ff9966, #ff5e62, #ff9966);
   display: flex;
@@ -12,12 +14,14 @@
   background-size: 400% 400%;
 }
 
+/* Animation du fond dégradé */
 @keyframes gradientBG {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
+/* Style du conteneur du formulaire de connexion */
 .login-container {
   background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(15px);
@@ -31,6 +35,7 @@
   border: 3px solid rgba(255,255,255,0.4);
 }
 
+/* Style du titre de la page de connexion */
 .login-title {
   font-size: 2.5rem;
   color: #5a2a0a;
@@ -41,6 +46,7 @@
   text-shadow: 3px 3px 0 rgba(255,255,255,0.5);
 }
 
+/* Style des champs de saisie du formulaire */
 .login-container input {
   width: 100%;
   padding: 15px;
@@ -54,6 +60,7 @@
   color: #5a2a0a;
 }
 
+/* Style du bouton de connexion */
 .login-container button {
   width: 100%;
   padding: 15px;
@@ -69,22 +76,26 @@
   transition: all 0.3s;
 }
 
+/* Effet au survol du bouton de connexion */
 .login-container button:hover {
   background: linear-gradient(to right, #ff5e62, #ff8a00);
   transform: scale(1.05);
 }
 
+/* Style des liens dans le formulaire */
 .login-container a {
   color: #5a2a0a;
   text-decoration: none;
   font-weight: bold;
 }
 
+/* Effet au survol des liens */
 .login-container a:hover {
   text-decoration: underline;
   color: #fff;
 }
 
+/* Style du texte de redirection vers l'inscription */
 .router-to-register {
   margin-top: 20px;
   font-size: 0.9rem;

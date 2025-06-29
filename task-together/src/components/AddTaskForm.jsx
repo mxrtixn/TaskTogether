@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import TaskForm from './TaskForm';
 
+// Composant pour afficher le formulaire d'ajout de tâche
 export default function AddTaskForm({ onSubmit, onClose }) {
+  // État local pour stocker les valeurs du formulaire
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -10,18 +12,22 @@ export default function AddTaskForm({ onSubmit, onClose }) {
     dueDate: '',
   });
 
+  // Met à jour l'état lors d'un changement dans un champ du formulaire
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
+
+  // Gère la soumission du formulaire
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('All values:', formData); 
     onSubmit(formData);
     setFormData({ title: '', description: '', tag: 'None', categorie: 'to-do', dueDate: '' });
-    onClose(); // Close after submit
+    onClose(); // Ferme la fenêtre après la soumission
   };
 
+  // Affiche la fenêtre modale avec le formulaire d'ajout de tâche
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       <div className="bg-white rounded-lg g w-full max-w-md p-6">

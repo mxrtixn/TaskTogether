@@ -1,59 +1,66 @@
 import TaskItem from "./TaskItem";
 import { updateTask } from "../services/firestore";
+
+// Composant pour afficher une colonne de tâches selon la catégorie
 export default function TaskList({tasks, category, setTaskLists}){
+    // Détermine le nom affiché de la catégorie
     let name = ''
     if (category === 'to-do' || category === 'todo') name = 'A Faire';
         else if (category === 'in-progress' || category === 'progress') name = 'En Cours';
         else if (category === 'done') name = 'Terminé';
         else name = category.charAt(0).toUpperCase() + category.slice(1);
 
+    // Gère l'événement de survol lors du drag & drop
     const handleDragOver = (e) => {
-        e.preventDefault(); // Essential to allow a drop
-        // Add visual feedback to the container being dragged over
+        e.preventDefault(); // Essentiel pour permettre le drop
+        // Ajoute un effet visuel lors du survol
         e.currentTarget.classList.add('bg-blue-50', 'border-blue-300');
     };
 
+    // Gère la sortie du survol lors du drag & drop
     const handleDragLeave = (e) => {
-        // Remove visual feedback from the container
+        // Retire l'effet visuel
         e.currentTarget.classList.remove('bg-blue-50', 'border-blue-300');
     };
     
+    // Gère le drop d'une tâche dans une colonne
     const handleDrop = (e) => {
         e.preventDefault();
         e.currentTarget.classList.remove('bg-blue-50', 'border-blue-300');
 
-        // Get data from the drag event
+        // Récupère les données de la tâche déplacée
         const taskId = e.dataTransfer.getData('taskId');
         const sourceColumnId = e.dataTransfer.getData('sourceColumnId');
-        const targetColumnId = e.currentTarget.dataset.columnId; // Use data-column-id for target
+        const targetColumnId = e.currentTarget.dataset.columnId; // Utilise data-column-id pour la cible
 
-        // If dropping into the same column or invalid target, do nothing
+        // Si la tâche est déposée dans la même colonne ou cible invalide, ne rien faire
         if (!taskId || !sourceColumnId || !targetColumnId || sourceColumnId === targetColumnId) {
             return;
         }
     
-        // Update the taskLists state
+        // Met à jour l'état des listes de tâches
         setTaskLists(async prevTaskLists => {
             const newLists = { ...prevTaskLists };
             
-            // Find the task in the source column
+            // Trouve la tâche dans la colonne source
             const sourceTasks = newLists[sourceColumnId];
             const taskIndex = sourceTasks.findIndex(task => task.id === taskId);
 
             if (taskIndex > -1) {
-                const [movedTask] = sourceTasks.splice(taskIndex, 1); // Remove from source
-                newLists[targetColumnId].push(movedTask); // Add to target
+                const [movedTask] = sourceTasks.splice(taskIndex, 1); // Retire de la source
+                newLists[targetColumnId].push(movedTask); // Ajoute à la cible
             }
 
             await updateTask(taskId, {categorie: targetColumnId});
-            return newLists; // Return new state to trigger re-render
+            return newLists; // Retourne le nouvel état pour déclencher le re-render
         });
 
     };
     
+    // Rendu de la colonne de tâches
     return <div
                 className="bg-white rounded-xl shadow-lg p-6 border border-gray-200"
-                data-column-id={category} // ID for drag-and-drop targeting
+                data-column-id={category} // ID pour le drag-and-drop
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
@@ -63,8 +70,7 @@ export default function TaskList({tasks, category, setTaskLists}){
                     {name}
                 </h2>
                 <div className="space-y-4">
-                    {/* Get tasks */}
-
+                    {/* Affiche chaque tâche de la colonne */}
                     {
                         tasks.map(task => {
                             let taskcategorie = '';

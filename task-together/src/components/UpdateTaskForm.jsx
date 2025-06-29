@@ -2,20 +2,27 @@ import { useState } from 'react';
 import TaskForm from './TaskForm';
 import { getAuth } from "firebase/auth";
 import { deleteTask } from '../services/firestore';
+
+// Composant pour afficher le formulaire de modification d'une tâche
 export default function AddTaskForm({ formDatad, onClose, onSubmit }) {
   const [formData, setFormData] = useState(formDatad);
 
+  // Met à jour l'état lors d'un changement dans un champ du formulaire
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  // Gère la soumission du formulaire de modification
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('All values:', formData); 
     onSubmit(formData);
     setFormData({ title: '', description: '', priority: 'None', categorie: 'to-do', dueDate: '' });
-    onClose(); // Close after submit
+    onClose(); // Ferme la fenêtre après la soumission
   };
+
+  // Gère la suppression de la tâche
   const handleDelete = async () =>  {
     const auth = getAuth();
     const user = auth.currentUser;
@@ -31,9 +38,9 @@ export default function AddTaskForm({ formDatad, onClose, onSubmit }) {
       messageBox("Erreur lors de la supprision de tâche : " + error);
     }
   };
+
+  // Affiche une boîte de message personnalisée
   const messageBox = (msg) => {
-        // In a real application, this would open a modal or navigate to a task creation page.
-        // For demonstration, we'll simulate a modal.
         const messageBox = document.createElement('div');
         messageBox.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
         messageBox.innerHTML = `
@@ -44,12 +51,14 @@ export default function AddTaskForm({ formDatad, onClose, onSubmit }) {
         `;
         document.body.appendChild(messageBox);
 
-        // Add event listener to close the simulated message box
+        // Ajoute un écouteur pour fermer la boîte de message simulée
         document.getElementById('closeMessageBox').addEventListener('click', () => {
             messageBox.remove();
         });
         
     };
+
+  // Affiche la fenêtre modale avec le formulaire de modification de tâche
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">

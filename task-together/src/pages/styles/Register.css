@@ -1,9 +1,12 @@
-/* Register Page - AAAART Orange Theme */
+/* Feuille de style principale pour la page d'inscription */
+
+/* Import de la police Rubik Mono One depuis Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
+
+/* Style du conteneur principal de la page d'inscription */
 .divbody {
   margin: 12;
   padding: 12;
-  /*font-family: 'Rubik Mono One', sans-serif;*/
   height: 100vh;
   background: linear-gradient(45deg, #ff9966, #ff5e62, #ff9966);
   display: flex;
@@ -13,11 +16,14 @@
   background-size: 400% 400%;
 }
 
+/* Animation du fond dégradé */
 @keyframes gradientBG {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
+/* Style du conteneur du formulaire d'inscription */
 .register-container {
   background-color: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(15px);
@@ -32,6 +38,7 @@
   margin: 2rem auto;
 }
 
+/* Style du titre de la page d'inscription */
 .register-title {
   font-size: 2rem;
   color: #5a2a0a;
@@ -42,12 +49,14 @@
   font-family: 'Rubik Mono One', sans-serif;
 }
 
+/* Style du formulaire d'inscription */
 .register-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
+/* Style des champs de saisie du formulaire */
 .register-input {
   padding: 15px;
   border: none;
@@ -59,6 +68,7 @@
   color: #5a2a0a;
 }
 
+/* Style du bouton d'inscription */
 .register-button {
   width: 100%;
   padding: 15px;
@@ -74,11 +84,13 @@
   transition: all 0.3s;
 }
 
+/* Effet au survol du bouton d'inscription */
 .register-button:hover {
   background: linear-gradient(to right, #ff5e62, #ff8a00);
   transform: scale(1.05);
 }
 
+/* Style du message d'erreur */
 .error-message {
   color: #ff0000;
   font-size: 1rem;
@@ -86,17 +98,20 @@
   text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
 }
 
+/* Style du texte de redirection vers la connexion */
 .router-to-login {
   margin-top: 20px;
   font-size: 0.9rem;
   font-weight: bold;
 }
 
+/* Style des liens dans la redirection */
 .router-to-login a {
   color: #5a2a0a;
   text-decoration: none;
 }
 
+/* Effet au survol des liens */
 .router-to-login a:hover {
   text-decoration: underline;
   color: #fff;

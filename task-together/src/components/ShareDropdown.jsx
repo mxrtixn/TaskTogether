@@ -1,32 +1,37 @@
 import {useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
+
+// Composant pour afficher un menu déroulant de partage par email
 export default function ShareDropdown({ currentEmails, anchorRef, onClose, onSave }) {
+  // Position du menu déroulant
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  // Champ de saisie de l'email
   const [emailInput, setEmailInput] = useState("");
+  // Liste des emails avec lesquels partager
   const [emails, setEmails] = useState(currentEmails);
   const dropdownWidth = 280;
 
+  // Calcule la position du menu déroulant par rapport à l'ancre
   useEffect(() => {
-    
-
     if (anchorRef.current) {
       const rect = anchorRef.current.getBoundingClientRect();
 
       let left = rect.left + window.scrollX;
       const rightEdge = left + dropdownWidth;
 
-      // If dropdown will go outside screen, shift it to left
+      // Si le menu dépasse l'écran, le décale vers la gauche
       if (rightEdge > window.innerWidth - 10) {
         left = window.innerWidth - dropdownWidth - 10;
       }
 
       setPosition({
         top: rect.bottom + window.scrollY + 5,
-        left: Math.max(left, 10), // at least 10px from left
+        left: Math.max(left, 10), // au moins 10px du bord gauche
       });
     }
   }, [anchorRef]);
 
+  // Ajoute un email à la liste lors de la validation par Entrée
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && emailInput.trim()) {
       e.preventDefault();
@@ -36,11 +41,12 @@ export default function ShareDropdown({ currentEmails, anchorRef, onClose, onSav
           setEmailInput("");
         }
       } else {
-        alert("Invalid email address");
+        alert("Adresse email invalide");
       }
     }
   };
 
+  // Valide le format de l'email et empêche d'ajouter son propre email
   const validateEmail = (email) =>{
     const auth = getAuth();
     const user = auth.currentUser;
@@ -49,22 +55,24 @@ export default function ShareDropdown({ currentEmails, anchorRef, onClose, onSav
     }else{
       return false;
     }
-    
   }
-    
 
+  // Retire un email de la liste
   const removeEmail = (email) =>
     setEmails(emails.filter((e) => e !== email));
 
+  // Sauvegarde la liste des emails et ferme le menu
   const handleSave = () => {
     onSave(emails);
     onClose();
   };
 
+  // Ferme le menu sans sauvegarder
   const handleDiscard = () => {
     onClose();
   };
 
+  // Rendu du menu déroulant de partage
   return (
     <div
       className="absolute bg-white border rounded-xl shadow-xl p-4 z-[999]"
