@@ -6,94 +6,102 @@ import { getUserTasks, getSharedTask } from '../services/firestore';
 import AddTaskForm from '../components/AddTaskForm';
 import { createTask } from "../services/firestore";
 
+// Composant principal du tableau de bord
 export default function Dashboard(){
     const navigate = useNavigate();
+    // État pour stocker les tâches par catégorie
     const [tasksByCategory, setTasksByCategory] = useState({});
+    // État pour gérer l'ouverture de la fenêtre modale d'ajout de tâche
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    // Ouvre la fenêtre modale pour créer une nouvelle tâche
     const handleCreateTaskClick = () => {
         setIsModalOpen(true);
     };
     
-useEffect(() => {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    // Récupère les tâches de l'utilisateur et les tâches partagées, puis les regroupe par catégorie
+    useEffect(() => {
+        const auth = getAuth();
+        const user = auth.currentUser;
 
-    if (!user) return;
+        if (!user) return;
 
-    const grouped = {
-        'to-do': [],
-        'in-progress': [],
-        'done': []
-    };
-
-    let userTasks = [];
-    let sharedTasks = [];
-
-    const mergeAndSet = () => {
-        const combined = [...userTasks, ...sharedTasks];
-        const groupedCombined = {
+        const grouped = {
             'to-do': [],
             'in-progress': [],
-            'done': [],
+            'done': []
         };
 
-        combined.forEach(task => {
-            let category = task.categorie?.trim().toLowerCase() || 'uncategorized';
-            if (!groupedCombined[category]) groupedCombined[category] = [];
-            groupedCombined[category].push(task);
+        let userTasks = [];
+        let sharedTasks = [];
+
+        // Fusionne les tâches utilisateur et partagées, puis met à jour l'état
+        const mergeAndSet = () => {
+            const combined = [...userTasks, ...sharedTasks];
+            const groupedCombined = {
+                'to-do': [],
+                'in-progress': [],
+                'done': [],
+            };
+
+            combined.forEach(task => {
+                let category = task.categorie?.trim().toLowerCase() || 'uncategorized';
+                if (!groupedCombined[category]) groupedCombined[category] = [];
+                groupedCombined[category].push(task);
+            });
+
+            setTasksByCategory(groupedCombined);
+        };
+
+        // Abonnement aux tâches de l'utilisateur
+        const unsubscribeUser = getUserTasks(user.email, (tasks) => {
+            userTasks = tasks;
+            mergeAndSet();
         });
 
-        setTasksByCategory(groupedCombined);
-    };
+        // Abonnement aux tâches partagées
+        const unsubscribeShared = getSharedTask(user.email, (tasks) => {
+            sharedTasks = tasks;
+            mergeAndSet();
+        });
 
-    const unsubscribeUser = getUserTasks(user.email, (tasks) => {
-        userTasks = tasks;
-        mergeAndSet();
-    });
-
-    const unsubscribeShared = getSharedTask(user.email, (tasks) => {
-        sharedTasks = tasks;
-        mergeAndSet();
-    });
-
-    return () => {
-        unsubscribeUser();
-        unsubscribeShared();
-    };
-}, []);
+        // Nettoyage des abonnements lors du démontage du composant
+        return () => {
+            unsubscribeUser();
+            unsubscribeShared();
+        };
+    }, []);
     
-    // State for managing the visibility of the user settings dropdown
+    // État pour gérer l'ouverture du menu déroulant utilisateur
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    // Ref to detect clicks outside the dropdownAdd commentMore actions
+    // Références pour détecter les clics en dehors du menu déroulant
     const dropdownRef = useRef(null);
     const buttonRef = useRef(null);
+    // États pour stocker l'email et le nom d'affichage de l'utilisateur
     const [email, setEmail] = useState('');
     const [displayName, setDisplayName] = useState('');
     const auth = getAuth();
+
+    // Déconnecte l'utilisateur et redirige vers la page de connexion
     const handleLogout = async () =>  {
-        // Clear auth data (e.g., token, user info)
         await signOut(auth);
         localStorage.removeItem("userEmail");
         localStorage.removeItem("displayName")
         sessionStorage.clear();
-        // Navigate to login
         navigate('/login');
     };
-    // Effect to handle clicking outside the dropdown to close it
+
+    // Récupère les informations utilisateur et gère la fermeture du menu déroulant lors d'un clic extérieur
     useEffect(() => {
         const storedEmail = localStorage.getItem("userEmail");
         const name = localStorage.getItem("displayName");
-        // Redirect to login if no data found (optional)
         if (name == ""){
             window.location.href = '/login';
         }else{
-            console.log("name : ", name)
             setEmail(storedEmail);
             setDisplayName(name);
         }
         const handleClickOutside = (event) => {
-            // Close dropdown if click is outside the dropdown and the button
             if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
                 buttonRef.current && !buttonRef.current.contains(event.target)) {
                 setIsDropdownOpen(false);
@@ -101,16 +109,13 @@ useEffect(() => {
         };
 
         document.addEventListener('mousedown', handleClickOutside);
-        
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-            };
-        }, []);
-    // Function to handle the "Create New Task" button click
+    // Affiche une boîte de message personnalisée
     const messageBox = (msg) => {
-        // In a real application, this would open a modal or navigate to a task creation page.
-        // For demonstration, we'll simulate a modal.
         const messageBox = document.createElement('div');
         messageBox.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
         messageBox.innerHTML = `
@@ -121,17 +126,12 @@ useEffect(() => {
         `;
         document.body.appendChild(messageBox);
 
-        // Add event listener to close the simulated message box
         document.getElementById('closeMessageBox').addEventListener('click', () => {
             messageBox.remove();
         });
-        
     };
 
-    // Conceptual Drag and Drop Handlers (Frontend only, no state management yet)
-    // These functions provide visual feedback for drag-and-drop.
-    // For full functionality, you'd need a state management solution (e.g., React Context, Zustand)
-    // to update the task lists and re-render components.
+    // Ajoute une nouvelle tâche à la base de données
     const handleAddTask = async (Data) => {
         const auth = getAuth();
         const user = auth.currentUser;
@@ -141,39 +141,38 @@ useEffect(() => {
               else if (Data.categorie === 'En Cours' ) Data.categorie = 'in-progress';
               else if (Data.categorie === 'Terminé') Data.categorie = 'done';
               else Data.categorie = categorie.charAt(0).toUpperCase() + Data.categorie.slice(1);
-            console.log("create: ",Data.categorie);
             await createTask(user.email, Data);
-            messageBox("La tâche est ajouter avec success");
+            messageBox("La tâche est ajoutée avec succès");
         } catch (error) {
-            messageBox("Erreur lors de l'ajout de tâche : " + error);
+            messageBox("Erreur lors de l'ajout de la tâche : " + error);
         }
     };
+
+    // Génère les initiales de l'utilisateur à partir de son nom d'affichage
     let initials;
     try {
-    initials = displayName
-      .split(" ")
-      .filter(word => word.length > 0)     // Remove any empty words
-      .slice(0, 2)                          // First and last name only
-      .map(word => word[0].toUpperCase())  // Get first letter of each
-      .join(""); 
+        initials = displayName
+        .split(" ")
+        .filter(word => word.length > 0)
+        .slice(0, 2)
+        .map(word => word[0].toUpperCase())
+        .join(""); 
     }catch (ex){
         initials = 'test';
     };
-                              // Join the letters
-  return ( <div className="overflow-x-hidden min-h-screen flex flex-col bg-slate-50">
-            
+
+    // Rendu du composant Dashboard
+    return ( 
+        <div className="overflow-x-hidden min-h-screen flex flex-col bg-slate-50">
+            {/* En-tête avec logo et menu utilisateur */}
             <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between sticky top-0 z-10 border-b border-gray-200">
-                {/* Logo and Home Link */}
                 <div className="flex items-center space-x-4">
                     <a href="/" className="flex items-center text-gray-800 hover:text-blue-600 transition-colors duration-200">
                         <div className="text-3xl font-extrabold text-orange-500">
                           TaskTogether
                         </div>
                     </a>
-
                 </div>
-
-                {/* User Settings */}
                 <div className="relative">
                     <button
                         ref={buttonRef}
@@ -186,22 +185,18 @@ useEffect(() => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </button>
-
-                    {/* Dropdown Menu */}
                     <div
                         ref={dropdownRef}
                         className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-20 border border-gray-200 ${isDropdownOpen ? '' : 'hidden'}`}
                     >
-                        {/*<a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200 rounded-md mx-1 my-1">Profile</a>*/}
                         <hr className="border-t border-gray-200 my-1" />
                         <button onClick={handleLogout} className="block px-4 py-2 bg-white text-sm text-red-600 hover:bg-red-50 transition-colors duration-200 rounded-md mx-1 my-1">Déconnecter</button>
                     </div>
                 </div>
             </header>
-
+            {/* Section principale avec bouton d'ajout et liste des tâches */}
             <main className="flex-grow p-6 lg:p-8">
                 <div className="max-w-7xl mx-auto">
-                    {/* Create Task Button */}
                     <div className="mb-8 flex justify-center">
                         <button
                             onClick={handleCreateTaskClick}
@@ -214,9 +209,7 @@ useEffect(() => {
                         </button>
                     </div>
                     {isModalOpen && <AddTaskForm onSubmit={handleAddTask} onClose={() => setIsModalOpen(false)} />}
-                    {/* Task Sections */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                       
                         {Object.entries(tasksByCategory).map(([category, tasks]) => {
                             return <TaskList key={category} category={category} tasks={tasks} setTaskLists={setTasksByCategory}/>
                         })}

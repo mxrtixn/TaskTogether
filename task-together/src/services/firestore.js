@@ -31,6 +31,8 @@ export const getUserTasks = (userId, callback) => {
     callback(tasks);
   });
 };
+
+// Obtenir les tâches partagées avec un utilisateur en temps réel
 export const getSharedTask = (userId, callback) => {
   const q = query(collection(db, "tasks"), where("sharedWith", "array-contains", userId)); // corrigé ici aussi
   return onSnapshot(q, (snapshot) => {
@@ -48,18 +50,15 @@ export const updateTask = async (taskId, updatedData) => {
 // Supprimer une tâche
 export const deleteTask = async (taskId) => {
   const taskRef = doc(db, "tasks", taskId);
-  
   return await deleteDoc(taskRef);
-  
 };
 
-// Partager la liste de tâches
+// Partager la liste de tâches avec des emails
 export const saveShareTasks = async (taskId, Emails) => {
   const taskRef = doc(db, "tasks", taskId);
   const docSnap = await getDoc(taskRef);
 
   if (docSnap.exists()) {
-    
     await updateDoc(taskRef, {
       sharedWith: Emails,
     });
@@ -69,7 +68,8 @@ export const saveShareTasks = async (taskId, Emails) => {
     });
   }
 };
-// Obtenir la liste de tâches partager
+
+// Obtenir la liste des emails avec lesquels une tâche est partagée
 export const getShareWith = async (taskId) => {
  try {
     const taskRef = doc(db, "tasks", taskId);
