@@ -57,7 +57,7 @@ cd TaskTogether</code></pre>
     <li>Affichage calendrier</li>
     <li>Gestion avancée des équipes</li>
   </ul>
-/p>
+
 
   <hr />
 
