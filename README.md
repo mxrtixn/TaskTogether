@@ -46,7 +46,7 @@ cd TaskTogether</code></pre>
   <h2>Captures d’écran</h2>
   <p>Voici quelques aperçus de l’interface de l’application :</p>
 
-  <img src="./task-rtogether/src/assets/screenshots/dashboard.png" alt="Interface du tableau de bord" />
+  <img src="./task-together/src/assets/screenshots/dashboard.png" alt="Interface du tableau de bord" />
   <br><br>
   <img src="./task-together/src/assets/screenshots/registre.png" alt="Page de connexion" />
 
