@@ -43,7 +43,7 @@ export default function TaskForm({ formData, onChange }) {
           className="w-full p-2 border rounded"
         >
           <option>None</option>
-          <option>Bas</option>
+          <option>Basse</option>
           <option>Moyenne</option>
           <option>Haute</option>
         </select>
@@ -59,7 +59,7 @@ export default function TaskForm({ formData, onChange }) {
         >
           <option>A Faire</option>
           <option>En Cours</option>
-          <option>Terminé</option>
+          <option>Terminées</option>
         </select>
       </div>
     </div>

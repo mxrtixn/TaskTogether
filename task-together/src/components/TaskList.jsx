@@ -77,7 +77,7 @@ export default function TaskList({tasks, category, setTaskLists}){
                             
                             if (task.categorie === 'to-do' || task.categorie === 'todo') taskcategorie = 'A Faire';
                             else if (task.categorie === 'in-progress' || task.categorie === 'progress') taskcategorie = 'En Cours';
-                            else if (task.categorie === 'done') taskcategorie = 'Terminé';
+                            else if (task.categorie === 'done') taskcategorie = 'Terminées';
                             else taskcategorie = 'extra';
                             return <TaskItem key={task.id} id={task.id} title={task.title} description={task.description} dueDate={task.dueDate} tag={task.priority} categorie={taskcategorie}/>
                         })

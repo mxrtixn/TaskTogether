@@ -53,7 +53,7 @@ export default function TaskItem({ id, title, description, dueDate, tag, categor
           try {
               if (Data.categorie === 'A Faire' ) Data.categorie = 'to-do';
               else if (Data.categorie === 'En Cours' ) Data.categorie = 'in-progress';
-              else if (Data.categorie === 'Terminé') Data.categorie = 'done';
+              else if (Data.categorie === 'Terminées') Data.categorie = 'done';
               else Data.categorie = categorie.charAt(0).toUpperCase() + Data.categorie.slice(1);
               await updateTask(id, Data);
               messageBox("La tâche est modifier avec success");
@@ -65,12 +65,12 @@ export default function TaskItem({ id, title, description, dueDate, tag, categor
   // Détermine la couleur de fond selon la priorité
   const priorityColorBg = tag === 'Haute' ? 'bg-red-100'
     : tag === 'Moyenne' ? 'bg-yellow-100'
-    : tag === 'Bas' ? 'bg-green-100'
+    : tag === 'Basse' ? 'bg-green-100'
     : tag === 'None' ? 'bg-gray-200' : '';
   // Détermine la couleur du texte selon la priorité
   const priorityColorText = tag === 'Haute' ? 'text-red-600'
     : tag === 'Moyenne' ? 'text-yellow-600'
-    : tag === 'Bas' ? 'text-green-600'
+    : tag === 'Basse' ? 'text-green-600'
     : tag === 'None' ? 'text-gray-500' : '';
     
     // Gère le début du drag & drop
